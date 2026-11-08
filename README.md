@@ -18,6 +18,8 @@ A Roblox PvE action RPG about becoming a visibly different, more capable charact
 ## Inspect the authored visual work
 [World layout](assets/previews/riftwake-world.png), [Verdant region](assets/previews/riftwake-verdant.png) and [rig evolution](assets/previews/riftwake-forms.png) are Blender previsualizations exported from the actual Luau geometry/appearance builders. They are **not Roblox engine screenshots**. The character in those previews is a neutral R6 mannequin; actual players use their own Roblox avatar with the generated rig attached. UI, engine lighting, animation, collisions and multiplayer are not validated by these renders.
 
+[Verified replacement build and Studio download](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42503328511) — game-source commit `f462be1`; CI and artifact upload succeeded.
+
 ## Cloud-first development and builds
 Your laptop can remain off. Codex Cloud and GitHub handle source work, research, tests and place generation.
 

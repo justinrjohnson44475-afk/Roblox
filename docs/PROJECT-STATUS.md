@@ -33,3 +33,6 @@ Roblox engine execution, Studio visual/device/multiplayer tests, real player res
 4. Resolve classification, theological and asset review; then authorized closed beta and measured cohorts.
 
 Cloud code, research and builds do not need the owner’s laptop on or a Local-mode switch. A supported Studio host is needed for the engine gates; an authorized remote host could supply that later. Setup, release prerequisites and remaining risks are documented separately. No credentials belong in chat or Git.
+
+## Verified GitHub delivery
+Implementation commit `6769ed11b268b029773957e6049c1b076e51701d` and the interaction-control fix `f462be15726dc4302ae613f432e83dd882119248` are pushed to origin/main. [Replacement CI run 42503328511](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42503328511) completed successfully for the control-fix commit. Its `Riftwake-Studio-f462be15726dc4302ae613f432e83dd882119248` artifact (ID 13626795719) was verified present and unexpired. This is a separate verified replacement run; the old Harborlight run is not being reused as evidence. Later documentation-only updates do not change the verified game source artifact.
