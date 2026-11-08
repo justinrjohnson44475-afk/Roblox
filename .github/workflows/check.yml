@@ -1,0 +1,22 @@
+name: Cloud checks and Studio artifacts
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned tools
+        run: bash scripts/bootstrap.sh
+      - name: Test and build
+        run: bash scripts/check.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Harborlight-Studio-${{ github.sha }}
+          path: build/
+          retention-days: 14

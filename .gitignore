@@ -1,0 +1,10 @@
+.tools/
+build/
+.env
+.env.*
+!.env.example
+*.rbxl.lock
+*.rbxlx.lock
+.DS_Store
+__pycache__/
+*.pyc

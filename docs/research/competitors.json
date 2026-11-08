@@ -1,0 +1,148 @@
+{
+  "observed_date": "2026-11-07",
+  "snapshot_utc": "2026-11-07T22:15:00Z",
+  "source": "https://endgametools.com/en/roblox/charts",
+  "scope": "purposive sample, not top twenty ranking",
+  "games": [
+    {
+      "name": "Steal An Egg",
+      "creator_listing": "and Collect Rare Pets",
+      "genre_analyst": "Simulation",
+      "place_id": "107778070777162",
+      "reported_ccu": 759028
+    },
+    {
+      "name": "Brookhaven RP",
+      "creator_listing": "Brookhaven by Voldex",
+      "genre_analyst": "Roleplay",
+      "place_id": "4924922222",
+      "reported_ccu": 464344
+    },
+    {
+      "name": "Blox Fruits",
+      "creator_listing": "Gamer Robot Inc",
+      "genre_analyst": "Action RPG",
+      "place_id": "2753915549",
+      "reported_ccu": 333756
+    },
+    {
+      "name": "Murder Mystery 2",
+      "creator_listing": "Nikilis",
+      "genre_analyst": "Social survival",
+      "place_id": "142823291",
+      "reported_ccu": 305150
+    },
+    {
+      "name": "Throw Food For Animals",
+      "creator_listing": "Goofy Chupacabra",
+      "genre_analyst": "Collection simulation",
+      "place_id": "120219252362013",
+      "reported_ccu": 214920
+    },
+    {
+      "name": "Adopt Me!",
+      "creator_listing": "Uplift Games",
+      "genre_analyst": "Pet roleplay",
+      "place_id": "920587237",
+      "reported_ccu": 214619
+    },
+    {
+      "name": "RIVALS",
+      "creator_listing": "Nosniy Games",
+      "genre_analyst": "Shooter",
+      "place_id": "17625359962",
+      "reported_ccu": 161120
+    },
+    {
+      "name": "Dandy\u2019s World",
+      "creator_listing": "BlushCrunch Studio",
+      "genre_analyst": "Cooperative survival",
+      "place_id": "16116270224",
+      "reported_ccu": 149354
+    },
+    {
+      "name": "99 Nights in the Forest",
+      "creator_listing": "Grandma\u2019s Favourite Games",
+      "genre_analyst": "Survival",
+      "place_id": "79546208627805",
+      "reported_ccu": 137982
+    },
+    {
+      "name": "Fisch",
+      "creator_listing": "Fisching",
+      "genre_analyst": "Exploration collection",
+      "place_id": "16732694052",
+      "reported_ccu": 104437
+    },
+    {
+      "name": "DONT SPLASH",
+      "creator_listing": "Bacon Theory",
+      "genre_analyst": "Atmospheric traversal",
+      "place_id": "119958473240233",
+      "reported_ccu": 98057
+    },
+    {
+      "name": "Steal a Brainrot",
+      "creator_listing": "BRAZILIAN SPYDER",
+      "genre_analyst": "Competitive tycoon",
+      "place_id": "109983668079237",
+      "reported_ccu": 86703
+    },
+    {
+      "name": "Dress To Impress",
+      "creator_listing": "Dress To Impress Group",
+      "genre_analyst": "Fashion competition",
+      "place_id": "15101393044",
+      "reported_ccu": 78603
+    },
+    {
+      "name": "Break and Steal an Egg",
+      "creator_listing": "ILGames x Eggs",
+      "genre_analyst": "Collection tycoon",
+      "place_id": "114326934417838",
+      "reported_ccu": 76461
+    },
+    {
+      "name": "Pet Simulator 99",
+      "creator_listing": "BIG Games Pets",
+      "genre_analyst": "Collection simulation",
+      "place_id": "8737899170",
+      "reported_ccu": 50188
+    },
+    {
+      "name": "Huss Valley",
+      "creator_listing": "Huss Valley Official",
+      "genre_analyst": "Chase survival",
+      "place_id": "107535308163741",
+      "reported_ccu": 35151
+    },
+    {
+      "name": "Bee Swarm Simulator",
+      "creator_listing": "Onett",
+      "genre_analyst": "Collection adventure",
+      "place_id": "1537690962",
+      "reported_ccu": 32651
+    },
+    {
+      "name": "Grow a Garden",
+      "creator_listing": "The Garden Game",
+      "genre_analyst": "Gardening simulation",
+      "place_id": "126884695634066",
+      "reported_ccu": 31953
+    },
+    {
+      "name": "DOORS",
+      "creator_listing": "LSPLASH",
+      "genre_analyst": "Cooperative horror",
+      "place_id": "6516141723",
+      "reported_ccu": 30077
+    },
+    {
+      "name": "BedWars",
+      "creator_listing": "Easy.gg",
+      "genre_analyst": "Team strategy",
+      "place_id": "6872265039",
+      "reported_ccu": 29510
+    }
+  ]
+}

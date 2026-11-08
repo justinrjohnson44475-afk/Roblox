@@ -1,0 +1,16 @@
+{
+  "name": "Harborlight",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {"Shared": {"$path": "src/shared"}},
+    "ServerScriptService": {"Server": {"$path": "src/server"}},
+    "StarterPlayer": {"StarterPlayerScripts": {"Client": {"$path": "src/client"}}},
+    "Workspace": {
+      "$properties": {"FilteringEnabled": true, "Gravity": 196.2},
+      "HarborFoundation": {"$className": "Part", "$properties": {"Anchored": true, "Size": [110, 2, 90], "Position": [0, -1, 0], "Color": [0.24, 0.32, 0.32]}},
+      "Spawn": {"$className": "SpawnLocation", "$properties": {"Anchored": true, "Neutral": true, "Size": [8, 1, 8], "Position": [0, 1, 28]}}
+    },
+    "Lighting": {"$properties": {"ClockTime": 17, "Brightness": 2, "Ambient": [0.5, 0.55, 0.6]}},
+    "SoundService": {"$properties": {"RespectFilteringEnabled": true}}
+  }
+}
