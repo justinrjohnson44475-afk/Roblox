@@ -23,6 +23,15 @@ if not RunService:IsStudio() then
 	)
 	return
 end
+local Physics = game:GetService("PhysicsService")
+for _, group in { "AscensionPlayers", "AscensionNPC" } do
+	if not Physics:IsCollisionGroupRegistered(group) then
+		Physics:RegisterCollisionGroup(group)
+	end
+end
+Physics:CollisionGroupSetCollidable("AscensionPlayers", "AscensionPlayers", false)
+Physics:CollisionGroupSetCollidable("AscensionPlayers", "AscensionNPC", false)
+Physics:CollisionGroupSetCollidable("AscensionNPC", "AscensionNPC", false)
 Players.CharacterAutoLoads = false
 local Data = require(script.Parent.Parent.DataService)
 local source = ReplicatedStorage:WaitForChild("AscensionSource")
@@ -72,6 +81,11 @@ local function spawnHero(player)
 	combat:add(player)
 	local model = source.R15CollisionProxy:Clone()
 	model.Name = player.Name
+	for _, part in model:GetDescendants() do
+		if part:IsA("BasePart") then
+			part.CollisionGroup = "AscensionPlayers"
+		end
+	end
 	model:PivotTo(CFrame.new(0, 5, 52))
 	model.Parent = workspace
 	local profile = Data.get(player)

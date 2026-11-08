@@ -53,6 +53,7 @@ function Movement.new(world)
 				self:stopDash(player)
 			else
 				local params = RaycastParams.new()
+				params.CollisionGroup = "AscensionPlayers"
 				params.FilterType = Enum.RaycastFilterType.Exclude
 				params.FilterDescendantsInstances = { player.Character }
 				params.RespectCanCollide = true

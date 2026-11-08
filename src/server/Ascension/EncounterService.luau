@@ -43,6 +43,11 @@ function Encounters.new(source, animations, emit, onWin)
 		e.Arena = arena
 		local actor = source.R15CollisionProxy:Clone()
 		actor.Name = "Verdant Warden · collision proxy"
+		for _, part in actor:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.CollisionGroup = "AscensionNPC"
+			end
+		end
 		actor:ScaleTo(1.7)
 		actor:PivotTo(CFrame.new(e.Center + Vector3.new(0, 6, -22)))
 		actor.Parent = workspace
@@ -185,6 +190,7 @@ function Encounters.new(source, animations, emit, onWin)
 							params.FilterType = Enum.RaycastFilterType.Exclude
 							params.FilterDescendantsInstances = { e.Actor }
 							params.RespectCanCollide = true
+							params.CollisionGroup = "AscensionNPC"
 							local obstruction = workspace:Raycast(root.Position, delta, params)
 							if not obstruction or obstruction.Instance:IsDescendantOf(c) then
 								local facing = r.CFrame.LookVector:Dot(-delta.Unit)

@@ -33,6 +33,7 @@ function Hitbox.canHit(world, character, origin, target, definition, from, to, r
 		return false
 	end
 	local params = RaycastParams.new()
+	params.CollisionGroup = "AscensionNPC"
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { character }
 	params.RespectCanCollide = true

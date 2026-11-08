@@ -22,6 +22,7 @@ function Navigation.new()
 		end
 		actor.Last = now
 		local params = RaycastParams.new()
+		params.CollisionGroup = "AscensionNPC"
 		params.FilterType = Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances = { model }
 		local obstacle = workspace:Raycast(root.Position, target - root.Position, params)
