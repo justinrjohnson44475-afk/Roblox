@@ -32,6 +32,6 @@ return table.freeze({
 	Heavy = attack("Heavy", 0.35, 0.12, 0.43, 2.1, 0, 24, "down", "heavy"),
 	Coreburst = attack("Coreburst", 0.12, 0.06, 0.30, 1.8, 60, 0, "pulse", "core"),
 	Overdrive = attack("Overdrive", 0.25, 0.15, 0.60, 3.8, 100, 0, "pulse", "boss"),
-	Dash = { Distance = 18, Duration = 0.22, Defense = 0.4, Cost = 20 },
+	Dash = { Version = 2, Distance = 18, Duration = 0.18, Defense = 0.4, Cost = 20 },
 	Guard = { ParryWindow = 0.16, DamageScale = 0.3, Cost = 18, BreakRecovery = 0.7 },
 })

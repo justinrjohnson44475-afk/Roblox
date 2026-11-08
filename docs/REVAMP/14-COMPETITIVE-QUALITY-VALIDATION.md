@@ -14,7 +14,7 @@ Gate B requires actual solo/four-client Warden tests before combat/world rollout
 | P0 gate | No signature runtime execution evidence | Solo/four-client supported Studio host |
 | P0 gate | Prediction uses rejection/sequence events and a timeout; latency correctness unverified | Add client cooldown/window simulation and test explicit rejection under latency |
 | P1 | Diagnostic UI exceeds small portrait screens; remapping/production inventory missing | Responsive layouts and device study |
-| P1 | Several authored states not wired: strafes/landing/guard/parry, lean/feet | Animator/controller integration and captures |
+| P1 | Movement v2 wires traversal, guard/parry, landings and lean; engine blending/foot placement still unfinished | Engine captures, foot placement and blend tuning |
 | P1 | Death/disconnect/party/results recovery incomplete | Explicit retry/rejoin/results flow tests |
 | P1 | Audio IDs absent; loops/mix/surface/ambience unfinished | Owned imports, sound review and transitions |
 | P1 | Effects lack authored cracks/dust/material distinctions | Asset pass after nonobscuring combat capture |

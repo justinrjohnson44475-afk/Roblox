@@ -152,16 +152,24 @@ def clip(name,duration,keys,markers=None,loop=False,priority='Action'):
  clips[name]={'duration':duration,'keys':keys,'markers':markers or {},'loop':loop,'priority':priority}
 clip('Idle',2,[(0,idle),(1,{**idle,'UpperTorso':(.065,0,0),'Head':(-.03,0,.015)}),(2,idle)],loop=True,priority='Idle')
 clip('CombatIdle',1.4,[(0,ready),(.7,{**ready,'UpperTorso':(.17,0,-.15)}),(1.4,ready)],loop=True,priority='Idle')
-for name,dur,amp in [('Walk',.85,.48),('Run',.65,.7),('Sprint',.5,.9)]:
+# Athletic gait: hips lead, knees fold backward, quiet trailing arms for ninja run.
+for name,dur,amp in [('Walk',.85,.42),('Run',.60,.82),('Sprint',.46,1.05)]:
  keys=[]
- for i in range(9):
-  phase=i/8*math.tau;swing=math.sin(phase)*amp
-  p={**idle,'UpperTorso':(.1 if name=='Walk' else .22,0,math.sin(phase)*.05),
+ for i in range(17):
+  phase=i/16*math.tau;swing=math.sin(phase)*amp
+  ninja=name!='Walk';lean=-.38 if name=='Run' else -.62 if name=='Sprint' else -.07
+  p={**idle,'LowerTorso':(-.08 if ninja else 0,0,math.sin(phase)*.035),
+   'UpperTorso':(lean,0,math.sin(phase)*(.02 if ninja else .06)),
+   'Head':(-lean*.8,0,0),
    'LeftUpperLeg':(swing,0,0),'RightUpperLeg':(-swing,0,0),
-   'LeftLowerLeg':(max(0,-swing)*.9,0,0),'RightLowerLeg':(max(0,swing)*.9,0,0),
-   'LeftUpperArm':(-swing*.6,0,.1),'RightUpperArm':(swing*.6,0,-.1)}
-  keys.append((i/8*dur,p))
- clip(name,dur,keys,{'FootLeft':0,'FootRight':dur/2},True,'Movement')
+   'LeftLowerLeg':(-max(0,swing)*1.5,0,0),'RightLowerLeg':(-max(0,-swing)*1.5,0,0),
+   'LeftFoot':(-swing*.2,0,0),'RightFoot':(swing*.2,0,0),
+   'LeftUpperArm':(-.45 if ninja else -swing*.65,0,.12),
+   'RightUpperArm':(-.48 if ninja else swing*.65,0,-.12),
+   'LeftLowerArm':(-.08 if ninja else .1,0,0),'RightLowerArm':(-.06 if ninja else .1,0,0),
+   'RightHand':(0,0,math.pi if ninja else 0)}
+  keys.append((i/16*dur,p))
+ clip(name,dur,keys,{'FootLeft':dur*.25,'FootRight':dur*.75},True,'Movement')
 for name,dir in [('StrafeLeft',-1),('StrafeRight',1)]:
  clip(name,.75,[(0,{**ready,'LeftUpperLeg':(0,0,.15*dir),'RightUpperLeg':(0,0,-.15*dir)}),(.375,{**ready,'LeftUpperLeg':(0,0,-.2*dir),'RightUpperLeg':(0,0,.2*dir)}),(.75,ready)],{'FootLeft':0,'FootRight':.375},True,'Movement')
 clip('Jump',.45,[(0,ready),(.12,{**ready,'LeftUpperLeg':(.8,0,0),'RightUpperLeg':(-.35,0,0),'LeftLowerLeg':(.8,0,0)}),(.45,ready)],{'Takeoff':0},False,'Movement')
@@ -170,13 +178,33 @@ for name,dur,bend in [('Land',.35,.35),('HeavyLand',.6,.7)]:
  clip(name,dur,[(0,{**ready,'UpperTorso':(bend,0,0),'LeftUpperLeg':(-bend,0,0),'RightUpperLeg':(-bend,0,0),'LeftLowerLeg':(bend*1.5,0,0),'RightLowerLeg':(bend*1.5,0,0)}),(dur,ready)],{'GroundImpact':0})
 for i,timing in enumerate([(.1,.12,.2),(.12,.12,.22),(.17,.15,.29)],1):
  w,a,r=timing;wind,contact,follow=strike(i)
- clip('Light'+str(i),w+a+r,[(0,ready),(w*.7,wind),(w,wind),(w+a*.45,contact),(w+a,follow),(w+a+r,ready)],{'TrailOn':w,'HitStart':w,'HitEnd':w+a,'TrailOff':w+a,'Recovery':w+a})
-heavy_w={**ready,'UpperTorso':(-.15,0,-.25),'RightUpperArm':(2.65,0,-.1),'RightLowerArm':(-.3,0,0),'LeftUpperArm':(1.9,0,.2)}
-heavy_c={**ready,'UpperTorso':(.55,0,.2),'RightUpperArm':(.6,0,.1),'RightLowerArm':(.15,0,0),'LeftUpperLeg':(-.25,0,0),'LeftLowerLeg':(.5,0,0)}
-clip('Heavy',.9,[(0,ready),(.26,heavy_w),(.35,heavy_w),(.42,heavy_c),(.53,heavy_c),(.9,ready)],{'TrailOn':.35,'HitStart':.35,'GroundImpact':.4,'HitEnd':.47,'TrailOff':.47,'Recovery':.47})
+ # Start coil in the hips; the shoulder/blade catches up, then follows through.
+ hip_lead={**ready,'LowerTorso':(0,0,wind['LowerTorso'][2] if 'LowerTorso' in wind else -.25),
+  'UpperTorso':(-.08,0,-.12 if i!=2 else .12),'LeftUpperLeg':(.16,0,0),'LeftLowerLeg':(-.2,0,0)}
+ contact={**contact,'UpperTorso':(-.18,0,contact['UpperTorso'][2]),'LeftUpperLeg':(.30,0,0),'LeftLowerLeg':(-.35,0,0),'RightUpperLeg':(-.18,0,0)}
+ follow={**follow,'UpperTorso':(-.12,0,follow['UpperTorso'][2]),'LeftUpperLeg':(.2,0,0),'LeftLowerLeg':(-.18,0,0)}
+ settle={**ready,'LowerTorso':(0,0,.10 if i!=2 else -.10),'RightUpperArm':(.72,0,.2 if i!=2 else -.2)}
+ clip('Light'+str(i),w+a+r,[(0,ready),(w*.35,hip_lead),(w,wind),(w+a*.45,contact),(w+a,follow),(w+a+r*.55,settle),(w+a+r,ready)],{'TrailOn':w,'HitStart':w,'HitEnd':w+a,'TrailOff':w+a,'Recovery':w+a})
+heavy_w={**ready,'UpperTorso':(.18,0,-.25),'RightUpperArm':(2.65,0,-.1),'RightLowerArm':(-.3,0,0),'LeftUpperArm':(1.9,0,.2)}
+heavy_c={**ready,'UpperTorso':(-.48,0,.2),'RightUpperArm':(.85,0,.1),'RightLowerArm':(.15,0,0),'LeftUpperLeg':(.3,0,0),'LeftLowerLeg':(-.65,0,0)}
+clip('Heavy',.9,[(0,ready),(.22,heavy_w),(.35,heavy_w),(.42,heavy_c),(.52,{**heavy_c,'UpperTorso':(-.35,0,.35)}),(.72,{**ready,'UpperTorso':(-.08,0,.12)}),(.9,ready)],{'TrailOn':.35,'HitStart':.35,'GroundImpact':.4,'HitEnd':.47,'TrailOff':.47,'Recovery':.47})
 for name in ['DashForward','DashBack','DashLeft','DashRight']:
- lean={'DashForward':.45,'DashBack':-.4,'DashLeft':0,'DashRight':0}[name]
- clip(name,.4,[(0,ready),(.06,{**ready,'UpperTorso':(lean,0,0),'LeftUpperLeg':(.5,0,0),'RightUpperLeg':(-.4,0,0)}),(.22,{**ready,'UpperTorso':(lean*.7,0,0)}),(.4,ready)],{'DashStart':0,'DashEnd':.22})
+ tilt={'DashForward':(-.65,0,0),'DashBack':(.22,0,0),'DashLeft':(-.3,-.2,0),'DashRight':(-.3,.2,0)}[name]
+ tuck={**ready,'UpperTorso':tilt,'Head':(.35,0,0),'LeftUpperLeg':(.9,0,0),'RightUpperLeg':(-.55,0,0),'LeftLowerLeg':(-1.3,0,0),'RightLowerLeg':(-.45,0,0),'LeftUpperArm':(-.45,0,.18),'RightUpperArm':(-.5,0,-.18),'RightHand':(0,0,math.pi)}
+ clip(name,.28,[(0,tuck),(.07,{**tuck,'LeftUpperLeg':(.65,0,0)}),(.18,{**tuck,'UpperTorso':tuple(v*.6 for v in tilt)}),(.28,ready)],{'DashStart':0,'DashEnd':.18})
+# Tucked air flip and five-step lateral wall-run; physics stays server-controlled.
+clip('DoubleJump',.48,[(0,{**ready,'LowerTorso':(0,0,0)}),(.1,{**ready,'LowerTorso':(-1.2,0,0),'LeftUpperLeg':(1.25,0,0),'RightUpperLeg':(1.1,0,0),'LeftLowerLeg':(-1.6,0,0),'RightLowerLeg':(-1.6,0,0)}),(.3,{**ready,'LowerTorso':(-4.8,0,0),'LeftUpperLeg':(1.1,0,0),'RightUpperLeg':(.8,0,0),'LeftLowerLeg':(-1.5,0,0),'RightLowerLeg':(-1.5,0,0)}),(.48,{**ready,'LowerTorso':(-math.tau,0,0)})],{'AirStep':0,'Unfold':.36})
+for name,side in [('WallRunLeft',1),('WallRunRight',-1)]:
+ keys=[]
+ for i in range(17):
+  phase=i/16*math.tau;swing=math.sin(phase)*.65
+  p={**ready,'UpperTorso':(-.28,side*.22,0),'Head':(.22,-side*.15,0),
+   'LeftUpperLeg':(swing,side*.32,0),'RightUpperLeg':(-swing,side*.32,0),
+   'LeftLowerLeg':(-max(0,swing)*1.6,0,0),'RightLowerLeg':(-max(0,-swing)*1.6,0,0),
+   'LeftUpperArm':(.2,.85 if side==1 else -.2,0),'RightUpperArm':(.2,-.85 if side==-1 else .2,0),
+   'RightHand':(0,0,math.pi)}
+  keys.append((i/16*.28,p))
+ clip(name,.28,keys,{'WallFootLeft':.07,'WallFootRight':.21},True)
 clip('Guard',1,[(0,{**ready,'RightUpperArm':(1.3,0,.6),'RightLowerArm':(.9,0,.1),'LeftUpperArm':(1.3,0,-.6),'LeftLowerArm':(.9,0,-.1)}),(1,{**ready,'RightUpperArm':(1.3,0,.6),'RightLowerArm':(.9,0,.1),'LeftUpperArm':(1.3,0,-.6),'LeftLowerArm':(.9,0,-.1)})],loop=True)
 clip('Parry',.4,[(0,ready),(.08,{**ready,'LeftUpperArm':(1.6,0,-.5),'LeftLowerArm':(.3,0,0),'UpperTorso':(0,0,.3)}),(.4,ready)],{'Parry':.08})
 clip('GuardBreak',.7,[(0,ready),(.12,{**idle,'UpperTorso':(-.4,0,0),'LeftUpperArm':(.2,0,1),'RightUpperArm':(.2,0,-1)}),(.7,ready)])
@@ -192,13 +220,22 @@ for name,dur in [('WardenIdle',2),('WardenWalk',1.2),('WardenSlam',2.2),('Warden
  else:
   keys=[(0,ready),(.85,heavy_w),(1.15,heavy_w),(1.35,heavy_c),(dur,ready)];markers={'Charge':0,'HitStart':1.15,'GroundImpact':1.35,'Recovery':1.4}
  clip(name,dur,keys,markers,name in ['WardenIdle','WardenWalk','WardenExposed'])
-# Explicitly linear baked keys, with eased authored pose transitions sampled at 30 Hz.
-def interpolate(keys,t):
+# Linear baked keys sample continuous authored Hermite motion at 60 Hz.
+def interpolate(keys,t,loop=False):
  for i in range(len(keys)-1):
   ta,pa=keys[i];tb,pb=keys[i+1]
   if t<=tb+1e-7:
-   u=max(0,min(1,(t-ta)/max(.00001,tb-ta)));u=u*u*(3-2*u)
-   return {name:tuple(pa.get(name,(0,0,0))[j]*(1-u)+pb.get(name,(0,0,0))[j]*u for j in range(3)) for name in bones}
+   u=max(0,min(1,(t-ta)/max(.00001,tb-ta)));dt=tb-ta
+   tp,pp=keys[i-1] if i>0 else ((keys[-2][0]-keys[-1][0],keys[-2][1]) if loop else (ta,pa))
+   tn,pn=keys[i+2] if i+2<len(keys) else ((keys[1][0]+keys[-1][0],keys[1][1]) if loop else (tb,pb))
+   def component(name,j):
+    a=pa.get(name,(0,0,0))[j];b=pb.get(name,(0,0,0))[j];delta=(b-a)/max(dt,.00001)
+    m0=(b-pp.get(name,(0,0,0))[j])/max(tb-tp,.00001);m1=(pn.get(name,(0,0,0))[j]-a)/max(tn-ta,.00001)
+    # Monotone Hermite keeps continuous contact momentum without overshoot/limb snaps.
+    m0=0 if m0*delta<=0 else math.copysign(min(abs(m0),3*abs(delta)),m0)
+    m1=0 if m1*delta<=0 else math.copysign(min(abs(m1),3*abs(delta)),m1)
+    return (2*u**3-3*u*u+1)*a+(u**3-2*u*u+u)*dt*m0+(-2*u**3+3*u*u)*b+(u**3-u*u)*dt*m1
+   return {name:tuple(component(name,j) for j in range(3)) for name in bones}
  return {name:keys[-1][1].get(name,(0,0,0)) for name in bones}
 q=Matrix(((1,0,0,0),(0,0,1,0),(0,-1,0,0),(0,0,0,1)))
 centers={name:(Vector(head)+Vector(tail))/2 for name,(_,head,tail) in bones.items()}
@@ -209,20 +246,21 @@ exported={'version':1,'fps':60,'bones':{},'clips':{}}
 for name,(parent,head,tail) in bones.items():
  exported['bones'][name]={'parent':parent,'center':list(q.to_3x3()@centers[name]),'joint':list(q.to_3x3()@Vector(head))}
 for name,c in clips.items():
- action=bpy.data.actions.new(name);arm.animation_data_create();arm.animation_data.action=action
- times=sorted(set([round(i/30,6) for i in range(math.ceil(c['duration']*30)+1) if i/30<=c['duration']]+[c['duration']]+list(c['markers'].values())))
+ action=bpy.data.actions.new(name);action.use_fake_user=True;arm.animation_data_create();arm.animation_data.action=action
+ times=sorted(set([round(i/60,6) for i in range(math.ceil(c['duration']*60)+1) if i/60<=c['duration']]+[c['duration']]+list(c['markers'].values())))
  frames=[];sweep=[]
  for t in times:
-  p=interpolate(c['keys'],t)
+  p=interpolate(c['keys'],t,c['loop'])
   # Keep the blade oriented through the forward contact plane. Shoulder lift alone
   # otherwise points a forward-gripped blade upward, outside its intended hit corridor.
   pitch=0
   if name=='Heavy':
    pitch=1.0 if t<c['markers']['HitStart'] else -.35 if t<=c['markers']['HitEnd'] else 0
   total=sum(p.get(j,(0,0,0))[0] for j in ['LowerTorso','UpperTorso','RightUpperArm','RightLowerArm'])
-  wrist=p.get('RightHand',(0,0,0));p['RightHand']=(-total+pitch,wrist[1],wrist[2])
+  wrist=p.get('RightHand',(0,0,0));trailing=abs(wrist[2])>math.pi*.5
+  p['RightHand']=((total if trailing else -total)+pitch,wrist[1],wrist[2])
   for bone,angles in p.items():
-   pb=arm.pose.bones[bone];rest=arm.data.bones[bone].matrix_local.to_3x3()
+   pb=arm.pose.bones[bone];pb.location=(0,0,0);rest=arm.data.bones[bone].matrix_local.to_3x3()
    rotation=rest.inverted()@Euler(angles,'XYZ').to_matrix()@rest
    pb.rotation_mode='QUATERNION';pb.rotation_quaternion=rotation.to_quaternion();pb.keyframe_insert('rotation_quaternion',frame=1+t*60,group=bone)
   frame=1+t*60;scene.frame_set(int(frame),subframe=frame-int(frame));bpy.context.view_layer.update()

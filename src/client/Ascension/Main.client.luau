@@ -61,12 +61,8 @@ local message = text(
 	UDim2.new(0.19, 0, 1, -119)
 )
 local session, seq, state = nil, 0, nil
-local combo = 0
-local comboAt = -100
 local heldAt = 0
 local isHeld = false
-local locomotion = nil
-local predicted = {}
 local function send(action, extra)
 	if not session then
 		return
@@ -92,29 +88,12 @@ local function send(action, extra)
 	remotes.Request:FireServer(packet)
 	return seq
 end
+local motion = require(script.Parent.MotionController).new(player, animations, presentation, send)
 local function predict(action)
-	local c = player.Character
-	if not c then
-		return
-	end
-	local name = action
-	if action == "light" then
-		combo = if os.clock() - comboAt < 1.2 then combo % 3 + 1 else 1
-		comboAt = os.clock()
-		name = "Light" .. combo
-	elseif action == "heavy" then
-		name = "Heavy"
-	elseif action == "burst" then
-		name = "Coreburst"
-	elseif action == "overdrive" then
-		name = "Overdrive"
-	elseif action == "dash" then
-		name = "DashForward"
-	end
-	local sequence = send(action)
-	local track = animations:play(c, name, 0.03)
-	if sequence and track then
-		predicted[sequence] = { Track = track, At = os.clock() }
+	if action == "dash" then
+		motion:dash()
+	else
+		motion:attack(action)
 	end
 end
 local function button(label, x, y, fn)
@@ -208,11 +187,18 @@ local function action(name, inputState)
 	elseif name == "AscensionGuard" then
 		if begin then
 			send("guard", { enabled = true })
+			if player.Character then
+				animations:play(player.Character, "Guard", 0.07)
+			end
 		elseif finish then
 			send("guard", { enabled = false })
+			if player.Character then
+				animations:stop(player.Character, "Action", 0.08)
+			end
 		end
 	elseif name == "AscensionSprint" then
 		if begin or finish then
+			motion.Sprint = begin
 			send("sprint", { enabled = begin })
 		end
 	elseif begin then
@@ -239,10 +225,34 @@ for i, name in { "Strike", "Heavy", "Guard", "Dash", "Burst", "Overdrive", "Spri
 		UDim2.new(1, -62 - ((i - 1) % 3) * 65, 1, -155 - math.floor((i - 1) / 3) * 62)
 	)
 end
+Input:BindAction("AscensionAirJump", function(_, inputState)
+	if inputState == Enum.UserInputState.Begin and motion:jump() then
+		return Enum.ContextActionResult.Sink
+	end
+	return Enum.ContextActionResult.Pass
+end, true, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
+Input:SetTitle("AscensionAirJump", "Air Jump")
+Input:SetPosition("AscensionAirJump", UDim2.new(1, -127, 1, -341))
+-- Native touch jump uses press edges; holding jump must not spend the extra jump.
+task.spawn(function()
+	local touch = player.PlayerGui:WaitForChild("TouchGui", 10)
+	local controls = touch and touch:WaitForChild("TouchControlFrame", 5)
+	local jump = controls and controls:WaitForChild("JumpButton", 5)
+	if jump then
+		jump.InputBegan:Connect(function(input)
+			if
+				input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1
+			then
+				motion:jump()
+			end
+		end)
+	end
+end)
 local function character(model)
 	presentation:clear()
 	audio:clear()
-	locomotion = nil
+	motion:character(model)
 	local hum = model:WaitForChild("Humanoid")
 	local animator = hum:WaitForChild("Animator")
 	workspace.CurrentCamera.CameraSubject = hum
@@ -257,7 +267,12 @@ local function character(model)
 		trail.Color = ColorSequence.new(Color3.fromRGB(148, 242, 214))
 		trail.Parent = blade
 	end
+	local watched = {}
 	animator.AnimationPlayed:Connect(function(track)
+		if watched[track] then
+			return
+		end
+		watched[track] = true
 		if trail then
 			track:GetMarkerReachedSignal("TrailOn"):Connect(function()
 				trail.Enabled = true
@@ -265,7 +280,7 @@ local function character(model)
 			track:GetMarkerReachedSignal("TrailOff"):Connect(function()
 				trail.Enabled = false
 			end)
-			track.Stopped:Once(function()
+			track.Stopped:Connect(function()
 				trail.Enabled = false
 			end)
 		end
@@ -273,10 +288,10 @@ local function character(model)
 end
 player.CharacterRemoving:Connect(function(model)
 	animations:remove(model)
-	for _, p in predicted do
-		p.Track:Stop(0)
-	end
-	predicted = {}
+	motion.Model = nil
+	motion.Joint = nil
+	motion.Predicted = {}
+	motion.Queue = nil
 	presentation:clear()
 	audio:clear()
 end)
@@ -330,20 +345,16 @@ remotes.State.OnClientEvent:Connect(function(value)
 end)
 remotes.Gate.OnClientEvent:Connect(function(event)
 	if event.kind == "rejected" then
-		local p = predicted[event.sequence]
-		if p then
-			p.Track:Stop(0.04)
-			predicted[event.sequence] = nil
-		end
+		motion:reject(event)
 		message.Text = "Action rejected · " .. tostring(event.reason or "unavailable")
 	end
 end)
 remotes.Combat.OnClientEvent:Connect(function(event)
-	if event.sequence and event.actor == player.UserId then
-		local p = predicted[event.sequence]
-		if p then
-			p.Track:Stop(0.04)
-			predicted[event.sequence] = nil
+	motion:event(event)
+	if event.result == "dash" and event.actor ~= player.UserId then
+		local actor = Players:GetPlayerByUserId(event.actor)
+		if actor and actor.Character then
+			presentation:phase(actor.Character, workspace:GetServerTimeNow())
 		end
 	end
 	if event.result == "telegraph" then
@@ -356,38 +367,18 @@ remotes.Combat.OnClientEvent:Connect(function(event)
 	end
 	presentation:event(event, workspace:GetServerTimeNow())
 	if typeof(event.position) == "Vector3" then
-		audio:play(event.result, event.position, workspace:GetServerTimeNow())
+		audio:play(
+			if event.result == "wallstep" then "foot_stone" else event.result,
+			event.position,
+			workspace:GetServerTimeNow()
+		)
 	end
 end)
 Run.RenderStepped:Connect(function(dt)
 	local now = os.clock()
 	presentation:step(workspace:GetServerTimeNow(), dt)
 	audio:step(workspace:GetServerTimeNow())
-	for id, p in predicted do
-		if now - p.At > 0.8 then
-			p.Track:Stop(0.08)
-			predicted[id] = nil
-		end
-	end
-	local c = player.Character
-	local h = c and c:FindFirstChildOfClass("Humanoid")
-	if not c or not h or h.Health <= 0 then
-		return
-	end
-	local nextClip = if h.FloorMaterial == Enum.Material.Air
-		then (if c.PrimaryPart.AssemblyLinearVelocity.Y > 0 then "Jump" else "Fall")
-		elseif h.MoveDirection.Magnitude < 0.1 then (if state and state.encounter
-			then "CombatIdle"
-			else "Idle")
-		elseif h.WalkSpeed > 20 then "Sprint"
-		else "Run"
-	if nextClip ~= locomotion then
-		if locomotion and animations.Tracks[c] and animations.Tracks[c][locomotion] then
-			animations.Tracks[c][locomotion]:Stop(0.12)
-		end
-		locomotion = nextClip
-		animations:play(c, nextClip, 0.12)
-	end
+	motion:step(dt, state)
 	local camera = workspace.CurrentCamera
 	if camera and presentation.Shake > 0.001 then
 		camera.CFrame *= CFrame.Angles(

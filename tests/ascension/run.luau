@@ -1,6 +1,7 @@
 --!strict
 return function(test, equal)
 	local BuildAdapter = require("../../src/shared/Ascension/BuildAdapter")
+	local Traversal = require("../../src/shared/Ascension/Traversal")
 	local Protocol = require("../../src/shared/Ascension/Protocol")
 	local Timeline = require("../../src/shared/Ascension/CombatTimeline")
 	local Def = require("../../src/shared/Ascension/AttackDefinitions")
@@ -126,7 +127,7 @@ return function(test, equal)
 		equal(s.Attack, nil)
 		equal(s.Stamina, 80)
 		equal(Def.Dash.Distance, 18)
-		equal(Def.Dash.Duration, 0.22)
+		equal(Def.Dash.Duration, 0.18)
 		equal(s.DodgeUntil, 1.63)
 		assert(not Timeline.dash(s, 2, stats, Def))
 		equal(Timeline.defend(s, 40, 1.4, 1, true, Def), 0)
@@ -176,6 +177,61 @@ return function(test, equal)
 		equal(first.ReachScale, 1.5)
 		equal(BuildAdapter.accept(s, Def.Light1, values, "strider", 1.6).Damage, 20)
 		equal(BuildAdapter.accept(s, Def.Coreburst, values, "arcanist", 2).Damage, 48)
+	end)
+
+	test("air jump is one extra jump and tiny ground contacts do not replenish it", function()
+		local s = Traversal.new()
+		Traversal.observe(s, true, 1)
+		Traversal.observe(s, true, 1.1)
+		assert(not Traversal.airJump(s, 1.2))
+		Traversal.observe(s, false, 1.3)
+		assert(not Traversal.airJump(s, 1.35))
+		assert(Traversal.airJump(s, 1.41))
+		assert(not Traversal.airJump(s, 2))
+		Traversal.observe(s, true, 2.1)
+		Traversal.observe(s, false, 2.12)
+		assert(not Traversal.airJump(s, 2.4))
+		Traversal.observe(s, true, 3)
+		Traversal.observe(s, true, 3.1)
+		Traversal.observe(s, false, 3.2)
+		assert(Traversal.airJump(s, 3.31))
+	end)
+	test("wall running needs a valid wall, stamina and airborne state and cannot chain forever", function()
+		local s = Traversal.new()
+		Traversal.observe(s, true, 0)
+		Traversal.observe(s, true, 0.1)
+		Traversal.observe(s, false, 0.2)
+		assert(not Traversal.wall(s, 0.4, false, 100))
+		assert(not Traversal.wall(s, 0.4, true, 0))
+		assert(Traversal.wall(s, 0.4, true, 100))
+		for step = 1, 5 do
+			equal(Traversal.wallStep(s, 0.4 + (step - 1) * 0.14 + 0.071), step)
+		end
+		assert(not Traversal.wallStep(s, 1.11))
+		assert(not Traversal.wall(s, 2, true, 100))
+		Traversal.observe(s, true, 3)
+		Traversal.observe(s, true, 3.1)
+		Traversal.observe(s, false, 3.2)
+		assert(Traversal.wall(s, 3.4, true, 100))
+	end)
+	test("phase dash speed integrates to eighteen studs and eases to rest", function()
+		local sum = 0
+		local duration = Def.Dash.Duration
+		for i = 1, 1000 do
+			sum += Traversal.dashSpeed((i - 0.5) / 1000, 18, duration) * duration / 1000
+		end
+		assert(math.abs(sum - 18) < 0.0001)
+		assert(Traversal.dashSpeed(0, 18, duration) == 0)
+		assert(Traversal.dashSpeed(1, 18, duration) < 0.00001)
+		assert(Traversal.dashSpeed(0.5, 18, duration) > Traversal.dashSpeed(0.1, 18, duration))
+		equal(Traversal.clip("dash", -1, 0), "DashBack")
+		equal(Traversal.clip("dash", 0, -1), "DashLeft")
+	end)
+	test("traversal request envelopes retain sequence replay protection", function()
+		local s = Protocol.newSession("air")
+		assert(Protocol.decode(s, { version = 2, session = "air", seq = 1, action = "airJump" }, 1))
+		assert(not Protocol.decode(s, { version = 2, session = "air", seq = 1, action = "airJump" }, 1.1))
+		assert(Protocol.decode(s, { version = 2, session = "air", seq = 2, action = "wallrun" }, 1.2))
 	end)
 
 	test("Warden telegraphs before impact and breaks into exposure", function()
@@ -383,19 +439,23 @@ return function(test, equal)
 		end
 		equal(Sweep.distance({ x = 3, y = 0, z = 0 }, { x = 0, y = 0, z = 0 }, { x = 0, y = 0, z = 0 }), 3)
 	end)
-	test("source animation library has thirty named clips with R15 joint poses and active markers", function()
-		local library = R.deserializeModel(fs.readFile("assets/ascension/animations/SourceClips.rbxmx"))[1]
-		equal(#library:GetChildren(), 30)
-		local heavy = library:FindFirstChild("Heavy")
-		assert(heavy and heavy:IsA("KeyframeSequence"))
-		local markers = {}
-		for _, item in heavy:GetDescendants() do
-			if item:IsA("KeyframeMarker") then
-				markers[item.Name] = true
+	test(
+		"source animation library has thirty-three named clips with R15 joint poses and active markers",
+		function()
+			local library =
+				R.deserializeModel(fs.readFile("assets/ascension/animations/SourceClips.rbxmx"))[1]
+			equal(#library:GetChildren(), 33)
+			local heavy = library:FindFirstChild("Heavy")
+			assert(heavy and heavy:IsA("KeyframeSequence"))
+			local markers = {}
+			for _, item in heavy:GetDescendants() do
+				if item:IsA("KeyframeMarker") then
+					markers[item.Name] = true
+				end
 			end
+			assert(markers.TrailOn and markers.TrailOff and markers.HitStart and markers.HitEnd)
 		end
-		assert(markers.TrailOn and markers.TrailOff and markers.HitStart and markers.HitEnd)
-	end)
+	)
 	test("source rig has fifteen Motor6Ds and blade endpoints, with no scripts", function()
 		local rig = R.deserializeModel(fs.readFile("assets/ascension/R15CollisionProxy.rbxmx"))[1]
 		local joints = 0
@@ -409,4 +469,6 @@ return function(test, equal)
 		equal(joints, 15)
 		assert(rig.RelicBladeProxy.BladeBase and rig.RelicBladeProxy.BladeTip)
 	end)
+	require("./movement")(test, equal)
+	require("./presentation")(test, equal)
 end

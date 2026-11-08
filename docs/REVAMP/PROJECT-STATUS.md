@@ -10,7 +10,7 @@ This is an implementation checkpoint for **milestone A foundations and milestone
 | Party/reward/replication services | Diagnostic implementation; recovery limitations remain | n/a | Selected pure/mocked cases | No |
 | Additive schema3 | Yes; keys/leases/progression retained | n/a | Migration plus existing save-race tests | No live services |
 | Original hero/blade/Warden | Blender/FBX drafts | No | Source/hash checks | No |
-|30 named animations/measured sweeps | Exported JSON/FBX/KeyframeSequence | No | Marker/DOM/source checks | No |
+|33 named animations/measured sweeps | Exported JSON/FBX/KeyframeSequence | No | Marker/DOM/source checks | No |
 |14 original audio sketches | WAV drafts and capped playback code | No | Format/hash checks | No |
 | Signature arena and capped effects | Diagnostic model/runtime | n/a | DOM/compilation/pool logic | No |
 |17 requested documents, bible/catalogue/handoff | Written | n/a | Reviewed against source limitations | n/a |
@@ -18,7 +18,11 @@ This is an implementation checkpoint for **milestone A foundations and milestone
 | Ember/Astral expansion, production shop/inventory | Not implemented in overhaul | No | No | No |
 | Performance/independent player studies/publication | Pending | n/a | No | No |
 
-Production readiness is blocked by47 assets lacking verified owned IDs/import evidence and all required engine/player/device gates. All quality scores remain Not Evaluated. No competitor gameplay footage was watched; retry returned403. No costs, merging, asset purchases or Roblox publishing occurred.
+Production readiness is blocked by50 assets lacking verified owned IDs/import evidence and all required engine/player/device gates. All quality scores remain Not Evaluated. No competitor gameplay footage was watched; retry returned403. No costs, merging, asset purchases or Roblox publishing occurred.
+
+## Owner movement feedback update
+
+Implemented [Movement v2](16-MOVEMENT-V2.md): anime-inspired Run/Sprint, revised sword curves and prediction handoff, phase-dash echoes, double jump, short wall runs and an edge practice/material area. The owner reported liking map textures and disliking stiff movement; no agent-observed engine capture or independent acceptance result is available. The updated place needs Studio inspection. All source assets remain unimported drafts.
 
 ## Continuation checkpoint
 

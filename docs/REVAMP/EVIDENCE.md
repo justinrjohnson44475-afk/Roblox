@@ -16,3 +16,12 @@ Exact build SHA256 values are emitted to `build/SHA256SUMS` and uploaded with ea
 ## Verified GitHub checkpoint
 
 Draft [PR #1](https://github.com/justinrjohnson44475-afk/Roblox/pull/1) is open and attached to this task; no merge occurred. Source checkpoint `353b6274afe654f100b3dee08057e40eeedf5159` passed [GitHub Actions run42516445182](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42516445182), observed completed/success on November8. This includes the final actor-collision/obstruction-isolation fix. It is cloud CI evidence only. The following evidence-record commit changes documentation, not tested game source.
+
+
+## Movement v2 — owner-feedback revision
+
+The owner reported liking map textures but finding motion stiff. That report informed the revision; it does not establish this new build's engine quality. New cloud execution: **143 Luau checks**, **9 publisher tests**, StyLua, both Rojo projects, structural inspections and source integrity passed. Added tests cover one-extra-jump budgets, valid/frozen wall-run eligibility, five-step timing, dash-profile integral, replay protection, mocked force/ownership cleanup and accepted-prediction continuity. These are not Roblox physics tests.
+
+Source now has33 clips and50 registry records; all remain exported and await owned imports/engine validation. Reopened the `.blend` and observed33 retained actions. Inspected Blender poses for sprint, sword contact and the air flip, corrected trailing blade orientation, and rendered five source poses. No new Roblox visual test was performed. The sword-video embed fetch was throttled; its published transcript and official ninja-run pose description were read.
+
+Test delivery: `build/Riftwake-Movement-v2.rbxl`, SHA256 `2bd04bba1989d44f44df0334aadf6cfbf42e66ce0bf57216d70f6ecc43ca969f`. This named copy equals the updated signature binary. `16-MOVEMENT-V2.md` records controls, references and exact Studio regressions. No merge, production publication, paid resources or independent-study results.

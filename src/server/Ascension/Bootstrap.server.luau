@@ -67,7 +67,29 @@ encounters = require(script.Parent.EncounterService).new(source, animations, emi
 		end
 	end
 end)
-local combat = require(script.Parent.CombatService).new(Data, encounters, animations, emit)
+local combat = require(script.Parent.CombatService).new(
+	Data,
+	encounters,
+	animations,
+	emit,
+	function(player, action, extra)
+		local c = player.Character
+		local root = c and c.PrimaryPart
+		if not root then
+			return
+		end
+		eventSerial += 1
+		extra.result = action
+		extra.actor = player.UserId
+		extra.position = root.Position
+		extra.timestamp = workspace:GetServerTimeNow()
+		extra.version = 1
+		extra.seed = eventSerial
+		local e = encounters.ByUser[player.UserId]
+		extra.encounter = if e then e.Id else "sanctuary"
+		Replication.Events.Combat:FireAllClients(extra)
+	end
+)
 local function spawnHero(player)
 	if not player.Parent then
 		return
@@ -98,7 +120,7 @@ local function spawnHero(player)
 	model.Humanoid.Health = stats.Health
 	player.Character = model
 	model.PrimaryPart:SetNetworkOwner(player)
-	animations:play(model, "Idle")
+	-- The owning client drives hero presentation on this server-created Animator.
 	model.Humanoid.Died:Once(function()
 		combat:remove(player)
 		task.delay(3, function()
@@ -124,6 +146,9 @@ local function state(player)
 		notice = notices[player],
 		stamina = s and s.Stamina or 0,
 		focus = s and s.Focus or 0,
+		sprint = s and s.Sprint or false,
+		guard = s and s.Guard or false,
+		combo = s and s.Combo or 0,
 		profile = {
 			Level = Progression.level(profile.XP),
 			XP = profile.XP,

@@ -6,7 +6,7 @@ for _, path in { "build/Ascension-Signature.rbxl", "build/Ascension-Signature.rb
 	local shared = place:GetService("ReplicatedStorage").Shared
 	assert(shared:GetAttribute("AscensionEnabled") == true)
 	local source = place:GetService("ReplicatedStorage").AscensionSource
-	assert(#source.SourceClips:GetChildren() == 30)
+	assert(#source.SourceClips:GetChildren() == 33)
 	assert(source.R15CollisionProxy.PrimaryPart)
 	assert(place:GetService("Workspace"):FindFirstChild("SignatureArena"))
 	local count = 0
@@ -21,6 +21,6 @@ for _, path in { "build/Ascension-Signature.rbxl", "build/Ascension-Signature.rb
 			.. path
 			.. ": "
 			.. count
-			.. " scripts, 30 clips, diagnostic R15 rig and signature arena. No engine execution."
+			.. " scripts, 33 clips, diagnostic R15 rig and signature arena. No engine execution."
 	)
 end

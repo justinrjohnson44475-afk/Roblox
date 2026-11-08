@@ -11,6 +11,8 @@ function Presentation.new(mobile)
 		Flash = 0,
 		Shake = 0,
 		Telegraphs = {},
+		Echoes = {},
+		Fades = {},
 	}
 	local folder = Instance.new("Folder")
 	folder.Name = "AscensionLocalDebris"
@@ -46,6 +48,55 @@ function Presentation.new(mobile)
 			Spin = random:NextNumber(-5, 5),
 		}
 	end
+	function self:phase(model, now)
+		if not model then
+			return
+		end
+		local parts = {}
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") and part.Transparency < 1 then
+				parts[part] = part.LocalTransparencyModifier
+				part.LocalTransparencyModifier = math.max(part.LocalTransparencyModifier, 0.55)
+			end
+		end
+		local prior = self.Fades[model]
+		if prior then
+			parts = prior.Parts
+		end
+		self.Fades[model] = { Parts = parts, Ends = now + 0.20 }
+		-- Static pose echoes, no terrain/collision changes and no screen flash.
+		self.Echoes[model] = { Next = now, Left = if mobile or self.Motion == 0 then 1 else 3 }
+	end
+	function self:echo(model, now)
+		local index = 0
+		for _, source in model:GetDescendants() do
+			if not source:IsA("BasePart") or source.Transparency >= 1 then
+				continue
+			end
+			index += 1
+			if index > 18 then
+				break
+			end
+			local id = Budget.acquire(self.Budget, now + 0.22)
+			if not id then
+				break
+			end
+			local part = table.remove(self.Free) or Instance.new("Part")
+			part.Name = "PhaseEcho"
+			part.Anchored = true
+			part.CanCollide = false
+			part.CanQuery = false
+			part.CanTouch = false
+			part.Size = source.Size
+			part.CFrame = source.CFrame * CFrame.new(if index % 2 == 0 then 0.10 else -0.10, 0, 0)
+			part.Color = Color3.fromRGB(105, 221, 210)
+			part.Material = Enum.Material.Neon
+			part.Transparency = 0.65
+			part.Parent = folder
+			self.Active[id] = { Part = part, At = now, Kind = "echo", Duration = 0.22 }
+		end
+	end
+
 	function self:event(event, now)
 		local pos = event.position
 		if typeof(pos) ~= "Vector3" then
@@ -106,8 +157,37 @@ function Presentation.new(mobile)
 		end
 	end
 	function self:step(now, dt)
+		for model, echo in self.Echoes do
+			if not model.Parent or echo.Left <= 0 then
+				self.Echoes[model] = nil
+			elseif now >= echo.Next then
+				self:echo(model, now)
+				echo.Left -= 1
+				echo.Next = now + 0.055
+			end
+		end
+		for model, fade in self.Fades do
+			if now >= fade.Ends or not model.Parent then
+				for part, original in fade.Parts do
+					if part.Parent then
+						part.LocalTransparencyModifier = original
+					end
+				end
+				self.Fades[model] = nil
+			end
+		end
 		for id, d in self.Active do
 			local age = now - d.At
+			if d.Kind == "echo" then
+				d.Part.Transparency = 0.65 + 0.35 * math.clamp(age / d.Duration, 0, 1)
+				if age >= d.Duration then
+					Budget.release(self.Budget, id)
+					d.Part.Parent = nil
+					table.insert(self.Free, d.Part)
+					self.Active[id] = nil
+				end
+				continue
+			end
 			d.Part.CFrame = CFrame.new(d.Position + d.Velocity * age + Vector3.new(0, -18 * age * age, 0))
 				* CFrame.Angles(age * d.Spin, age * d.Spin, 0)
 			d.Part.Transparency = math.clamp((age - 0.5) / 0.8, 0, 1)
@@ -127,6 +207,15 @@ function Presentation.new(mobile)
 		self.Shake *= math.exp(-dt * 16)
 	end
 	function self:clear()
+		for _, fade in self.Fades do
+			for part, original in fade.Parts do
+				if part.Parent then
+					part.LocalTransparencyModifier = original
+				end
+			end
+		end
+		self.Fades = {}
+		self.Echoes = {}
 		for id, d in self.Active do
 			d.Part.Parent = nil
 			table.insert(self.Free, d.Part)

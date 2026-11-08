@@ -9,8 +9,8 @@ local Movement = require(script.Parent.MovementService)
 local Membership = require(Shared.Ascension.EncounterState)
 local BuildAdapter = require(Shared.Ascension.BuildAdapter)
 local Combat = {}
-function Combat.new(data, encounters, animations, emit)
-	local self = { States = {}, Movement = Movement.new(workspace), Positions = {} }
+function Combat.new(data, encounters, animations, emit, movementFeedback)
+	local self = { States = {}, Movement = Movement.new(workspace, movementFeedback), Positions = {} }
 	function self:add(player)
 		self.States[player] = Timeline.new()
 		self.Positions[player] = nil
@@ -32,20 +32,61 @@ function Combat.new(data, encounters, animations, emit)
 		local stats = Progression.stats(profile, Config)
 		local aim = request.Aim and Vector3.new(request.Aim.x, 0, request.Aim.z) or root.CFrame.LookVector
 		local action = request.Action
+		self.Movement:observe(player, root, hum, now)
+		if action == "airJump" or action == "wallrun" then
+			if s.Attack or s.Guard or now < s.LockedUntil then
+				return false, "committed"
+			end
+			if action == "airJump" then
+				local ok, reason = self.Movement:airJump(player, root, hum, now)
+				if ok and movementFeedback then
+					movementFeedback(player, "airJump", { clip = "DoubleJump", sequence = request.Sequence })
+				end
+				return ok, reason
+			end
+			if not s.Sprint then
+				return false, "Hold sprint to wall run"
+			end
+			local ok = self.Movement:wall(player, root, hum, aim, now, s.Stamina)
+			if ok then
+				s.Stamina -= 12
+				s.LastSpend = now
+			end
+			return ok, "No runnable wall or wall run already used"
+		end
 		if action == "guard" then
 			return Timeline.guard(s, request.Enabled == true, now)
 		end
 		if action == "sprint" then
 			s.Sprint = request.Enabled == true
+			if not s.Sprint then
+				self.Movement:stop(player, "wall")
+			end
 			return true
 		end
 		if action == "dash" then
+			if not self.Movement:canDash(player, root, aim) then
+				return false, "Wall blocks dash"
+			end
 			if not Timeline.dash(s, now, stats, Definitions) then
 				return false, "dash unavailable"
 			end
 			self.Movement:dash(player, root, aim, now, Definitions.Dash)
-			animations:play(c, "DashForward")
+			if movementFeedback then
+				movementFeedback(player, "dash", {
+					clip = require(Shared.Ascension.Traversal).clip(
+						"dash",
+						root.CFrame.LookVector:Dot(aim),
+						root.CFrame.RightVector:Dot(aim)
+					),
+					duration = Definitions.Dash.Duration,
+					sequence = request.Sequence,
+				})
+			end
 			return true
+		end
+		if self.Movement.Dashes[player] or self.Movement.Walls[player] then
+			return false, "Finish traversal before attacking"
 		end
 		local e = encounters.ByUser[player.UserId]
 		if not e or not Membership.contains(e, player.UserId) or e.Finished then
@@ -71,9 +112,10 @@ function Combat.new(data, encounters, animations, emit)
 		a.Origin = root.CFrame
 		a.RootPosition = root.Position
 		-- Bounded aim is intent only; enforce facing before accepting canonical sweep.
-		animations:play(c, Definitions[a.Definition].Animation)
+		-- Owning client predicts animation on the server-created Animator; markers never authorize damage.
 		emit(e, {
 			result = "attack",
+			ends = a.EndAt,
 			attack = a.Id,
 			action = Definitions[a.Definition].Animation,
 			actor = player.UserId,
@@ -107,8 +149,9 @@ function Combat.new(data, encounters, animations, emit)
 			local plausible = not last
 				or (root.Position - last.Position).Magnitude <= math.max(5, (now - last.At) * 100)
 			self.Positions[player] = { Position = root.Position, At = now }
+			self.Movement:observe(player, root, hum, now)
 			Timeline.regenerate(s, dt, now)
-			self.Movement:locomotion(player, hum, s)
+			self.Movement:locomotion(player, hum, s, dt)
 			local sweep, finished = Timeline.advance(s, now, Definitions)
 			if
 				sweep

@@ -16,3 +16,9 @@ Overlook(0,0,210) frames Warden landmark(0,0,-150). Entry threat(~0,0,100) withi
 Kit grammar:4/8/16-stud stone spans, modular arch halves, fractured capitals, root bridges, foliage sizes3/6/12, controlled bronze inset accents, dedicated low-complexity collision volumes. Combat floors remain readable; effects never modify structural collision. Stream boundaries use turns/arches and retain encounter ownership server-side. Future terrain/LOD/atlas work requires hardware profiles.
 
 Current deliverable: separate compact signature arena only. Flagship/Ember/Astral construction is deferred until the signature Studio gate, per the dependency order.
+
+## Owner-requested terrain/material diversity
+
+Retain the liked slate ground in the signature encounter. Future Verdant production includes dense jungle pockets with actual hanging vine geometry, tree canopies, root bridges and muddy/shallow-water transitions. Ember's outskirts include wind-shaped sand dunes and dry channels before scorched foundry rock, preserving its progression ID. Astral's lower approach uses abandoned urban streets, layered concrete/masonry facades and metal structures before the crown ruins. These are planned biome transitions, not new progression IDs or completed maps.
+
+The signature arena now has small edge material studies (sand, jungle trees/vine, urban wall-run facades) for visual/traversal feedback. They do not replace the gated flagship region or imply the large biomes are built.

@@ -165,6 +165,42 @@ end
 for _, z in { -77, 77 } do
 	part("Boundary", V.new(156, 18, 2), V.new(0, 7, z), { 40, 62, 52 })
 end
+-- Side training alcove leaves the central Warden floor and its approved slate intact.
+part("WallRunPracticeWest", V.new(2, 16, 36), V.new(42, 8, 32), { 102, 111, 111 }, E.Material.Concrete)
+part("WallRunPracticeEast", V.new(2, 16, 36), V.new(66, 8, 32), { 94, 105, 107 }, E.Material.Concrete)
+for _, x in { 42, 66 } do
+	part("UrbanLintel", V.new(3, 1, 38), V.new(x, 16.5, 32), { 113, 102, 76 }, E.Material.Metal)
+	for z = 20, 44, 12 do
+		part("UrbanFacadeInset", V.new(2.1, 4, 3), V.new(x, 10, z), { 37, 61, 65 }, E.Material.Slate)
+	end
+end
+part("DuneMaterialStudy", V.new(14, 0.16, 14), V.new(-52, 0.08, 58), { 181, 151, 96 }, E.Material.Sand)
+for _, x in { -64, -43 } do
+	local trunk = part("JungleTreeTrunk", V.new(12, 2, 2), V.new(x, 6, 30), { 84, 68, 49 }, E.Material.Wood)
+	trunk.Shape = E.PartType.Cylinder
+	trunk.CFrame *= C.Angles(0, 0, math.pi / 2)
+	local leaf = part("JungleCanopy", V.new(15, 7, 13), V.new(x, 14, 30), { 53, 95, 63 }, E.Material.Grass)
+	leaf.Shape = E.PartType.Ball
+	leaf.CanCollide = false
+end
+local previous = V.new(-64, 12, 30)
+for i = 1, 16 do
+	local t = i / 16
+	local nextPoint = V.new(-64 + 21 * t, 12 - math.sin(t * math.pi) * 5, 30 + math.sin(t * math.pi) * 1.5)
+	local delta = nextPoint - previous
+	local vine = part(
+		"HangingVine",
+		V.new(delta.Magnitude, 0.22, 0.22),
+		(previous + nextPoint) / 2,
+		{ 46, 91, 54 },
+		E.Material.Grass
+	)
+	vine.Shape = E.PartType.Cylinder
+	vine.CFrame = C.lookAt((previous + nextPoint) / 2, nextPoint) * C.Angles(0, math.pi / 2, 0)
+	vine.CanCollide = false
+	vine.CanTouch = false
+	previous = nextPoint
+end
 fs.writeFile("assets/ascension/SignatureArena.rbxmx", R.serializeModel({ arena }, true))
 -- Canonical blade points measured from the exported armature, sampled by server time.
 local samples = { Version = 1, Clips = {} }
@@ -179,5 +215,5 @@ fs.writeFile(
 		.. "]=])\n"
 )
 print(
-	"Baked 30 source clips, diagnostic R15 rig, signature arena and measured weapon samples; engine unverified."
+	"Baked 33 source clips, diagnostic R15 rig, signature arena and measured weapon samples; engine unverified."
 )
