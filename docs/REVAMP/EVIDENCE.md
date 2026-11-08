@@ -12,3 +12,7 @@ November 8, 2026. Local cloud execution, not Roblox engine execution.
 - No Roblox publication, merge, paid acquisition or asset purchases.
 
 Exact build SHA256 values are emitted to `build/SHA256SUMS` and uploaded with each CI artifact. GitHub run/PR evidence is added after remote verification, not inferred from local success. Build artifacts contain source diagnostics and cannot be described as a production-ready game.
+
+## Verified GitHub checkpoint
+
+Draft [PR #1](https://github.com/justinrjohnson44475-afk/Roblox/pull/1) is open and attached to this task; no merge occurred. Source checkpoint `353b6274afe654f100b3dee08057e40eeedf5159` passed [GitHub Actions run42516445182](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42516445182), observed completed/success on November8. This includes the final actor-collision/obstruction-isolation fix. It is cloud CI evidence only. The following evidence-record commit changes documentation, not tested game source.
