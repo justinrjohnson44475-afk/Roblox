@@ -1,3 +1,5 @@
+> Initial dossier, retained as historical evidence. Its listing-based scope did not justify the rejected Harborlight concept. See documents 10/11 for the current research correction and Riftwake decision.
+
 # Roblox market research — initial decision dossier
 
 ## Executive summary

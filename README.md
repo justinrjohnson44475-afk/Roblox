@@ -1,72 +1,56 @@
-# Harborlight — Restore Together
+# Riftwake: Ascend
 
-A cloud-developed Roblox restoration game written in Luau. Recover supplies, help other players rebuild a harbor, and earn lasting cosmetic lantern colors. An explicitly labeled Garden of Hope offers optional Christian reading without rewards or required participation.
+A Roblox PvE action RPG about becoming a visibly different, more capable character. Start with a fractured relic gauntlet, break constructs’ charged attacks, earn abilities and boss cores, forge an evolving combat rig, and unlock harder regions.
 
-**Status:** first implemented vertical slice. Cloud tests and Rojo place builds pass. Roblox Studio execution, visual playtesting, live service testing and publication have not occurred. This is not launch-ready or commercially validated.
+**Harborlight has been replaced.** The owner's criticism was valid: its chore loop lacked meaningful character growth and its appearance had not been inspected. The old implementation remains in Git history. Read [the research correction](docs/10-GAMEPLAY-AND-COMMUNITY-RESEARCH.md) and [replacement decision](docs/11-REPLACEMENT-CONCEPT-DECISION.md).
 
-Commercial objective: test whether understandable, cooperative restoration can support repeat play and ethical cosmetic sales. See [market research](docs/01-MARKET-RESEARCH.md), [concept decision](docs/02-MARKET-GAP-AND-OPPORTUNITY.md), [financial assumptions](docs/07-MONETIZATION-AND-FINANCIAL-STRATEGY.md) and [current status](docs/PROJECT-STATUS.md). Revenue is not guaranteed.
+## What is implemented
+- Strike combos, a timed defensive dash, Focus-powered Coreburst, and earned Overdrive.
+- Charged enemy attacks, interrupt/exposed-core windows, boss phases and region-specific phase-two attacks.
+- Three combat regions and a safe forge hub, with authored geometry baked into the place for edit-mode visibility.
+- XP/levels, deterministic stat upgrades, boss-first-clear gates and four visible rig forms.
+- Vanguard, Strider and Arcanist build paths with different tradeoffs; free forge changes after level 3.
+- Contribution rewards, profile persistence protections, keyboard/gamepad/touch bindings, HUD, forge cards and settings.
+- Clearly labeled optional Christian reading, unrelated to power, rewards, progression or analytics.
 
-[Verified GitHub build and downloadable Studio artifact](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42435421673) — implementation commit `7efbc7b`. This confirms CI builds/tests, not Roblox playtesting.
+**Verification status:** cloud logic/mock/DOM checks and Rojo builds pass. No Roblox Studio execution, visual playtest, real-player feedback or live-service verification has occurred. Video playback was attempted but blocked by the cloud browser network. Neither an attractive render nor a test suite establishes combat feel or commercial success.
 
-## Cloud workflow
-Development runs in Codex Cloud with GitHub as the source of truth. Your personal laptop can be off while research, code, tests, documentation and place builds run. No Local mode is needed for these steps.
+## Inspect the authored visual work
+[World layout](assets/previews/riftwake-world.png), [Verdant region](assets/previews/riftwake-verdant.png) and [rig evolution](assets/previews/riftwake-forms.png) are Blender previsualizations exported from the actual Luau geometry/appearance builders. They are **not Roblox engine screenshots**. The character in those previews is a neutral R6 mannequin; actual players use their own Roblox avatar with the generated rig attached. UI, engine lighting, animation, collisions and multiplayer are not validated by these renders.
 
-On Linux x86_64, from this repository:
+## Cloud-first development and builds
+Your laptop can remain off. Codex Cloud and GitHub handle source work, research, tests and place generation.
+
+Linux x86_64:
 
 ```bash
 bash scripts/bootstrap.sh
 bash scripts/check.sh
 ```
 
-Bootstrap downloads pinned official Rojo 7.7.1, Lune 0.11.1 and StyLua 2.6.0 releases and verifies the committed archive checksums. Requires Bash, curl, unzip, sha256sum and Python 3. On macOS/Windows, install the official Aftman tool manager and run `aftman install` using the pinned `aftman.toml`; use `rojo`, `lune` and `stylua` directly or adapt paths from `.tools/`. Do not run the Linux installer on Windows/macOS. No Wally dependencies or Node packages are needed.
+Pinned official tools: Rojo 7.7.1, Lune 0.11.1, StyLua 2.6.0. Bootstrap verifies committed archive hashes. Requires Bash, curl, unzip, sha256sum and Python 3. On Windows/macOS use official Aftman and `aftman install`, then `lune run scripts/bake-world.luau`, `rojo build default.project.json -o Riftwake.rbxl` and the equivalent test commands; the Bash installer is Linux-only. No Wally/Node dependency is required.
 
-Outputs:
+Build outputs: `build/Riftwake.rbxl`, `build/Riftwake.rbxlx`, verification logs and SHA256SUMS. GitHub Actions produces `Riftwake-Studio-<commit>` artifacts. The committed generated world is `assets/world.rbxmx`; its source is `src/server/World.luau`. The cloud check rebakes it before building. Inspect the actual workflow result before claiming remote CI success.
 
-- `build/Harborlight.rbxl` — binary Roblox place.
-- `build/Harborlight.rbxlx` — inspectable XML place.
-- `build/test-results.txt`, `build/place-inspection.txt`, `build/SHA256SUMS`.
+## Open in Roblox Studio
+1. Download the latest **Riftwake** artifact from GitHub Actions or this chat. Older Harborlight files are superseded.
+2. Open `Riftwake.rbxl` or `Riftwake.rbxlx` with **File → Open from File** on a supported Studio host. The complete authored static world is visible in edit mode.
+3. Press **Play**. Enemy constructs, your character rig and UI initialize at runtime.
+4. Enter the green **Verdant Reach** gate. Face the camera toward enemies. Mouse1 strikes; Q dashes; E uses Coreburst at level 2; R uses Overdrive at level 5. Gamepad: R2/B/X/Y. Touch: four combat buttons with native movement/jump controls.
+5. Successful strikes build Focus. Watch orange warnings; dash clear or interrupt a charge with Coreburst, then punish its exposed core. Contributions earn rewards even without the final hit.
+6. Return through the dawn gate. Interact with the forge to upgrade Power/Vitality/Flow, evolve the rig or change build paths. Defeat wardens to open Ember Scar and Astral Crown.
 
-The GitHub Actions workflow builds these artifacts on pushes and pull requests. Once a run succeeds, download `Harborlight-Studio-<commit>` from its Artifacts section. Generated artifacts are ignored by Git; source and build instructions are versioned. GitHub Actions execution must be checked independently; a local cloud check is not a passing GitHub run.
+Studio previews use memory-only profiles by default and say so. Stopping Play discards preview progress. Real persistence tests need a separate private test universe. See [Studio setup](docs/STUDIO-SETUP.md) and [QA](docs/08-QA-AND-PLAYTESTING.md).
 
-## Open the game in Roblox Studio
-1. Download the built binary or XML artifact from this chat or a successful GitHub Actions run and unzip the artifact if necessary.
-2. On any supported Windows/macOS machine with Roblox Studio, choose **File → Open from File** and select `Harborlight.rbxl` or `Harborlight.rbxlx`. You can remain in this Codex Cloud chat; switching Codex to Local mode is not required to open an artifact yourself.
-3. Press **Play**. The source-generated harbor, supply crates, repair stations, menus and garden appear at runtime. In edit mode, the initial floor and spawn are visible; runtime-generated objects are not missing assets.
-4. Use native movement. Walk to a teal crate and use its prompt. Carry up to five supplies, then contribute at the current repair station. Complete the pier, greenhouse and beacon, then replay the next shift.
-5. Open **Lantern colors** to spend earned tokens. Robux purchases are disabled by default. **Guide / settings** explains controls and has local sound/effects settings.
-6. For multiplayer tests use Studio’s **Server & Clients** / local server testing with at least two clients. Capture actual results using [the QA plan](docs/08-QA-AND-PLAYTESTING.md).
+## Rojo synchronization
+On a supported Studio machine, clone this repo, install matching tools and the official Rojo plugin, run `rojo serve default.project.json`, then connect the plugin to localhost:34872 and review the sync. When World.luau changes, rebake with `lune run scripts/bake-world.luau` so the model updates. Do not expose an unauthenticated cloud Rojo server publicly. Artifact handoff avoids any need for a continuous cloud-to-Studio connection. Codex does not need to switch to Local mode for you to open a build.
 
-Studio preview is intentionally memory-only: stopping Play loses progress. In-game messaging says so. Do not interpret this as a broken production save.
+## Architecture and services
+`src/shared` owns profile migration, progression, combat calculations, enemy states and request gates. `src/server` owns world/appearance builders, authority, encounters, persistence, and purchase/analytics adapters. `src/client` owns HUD, menus, input and cosmetic feedback. `tests`, `scripts`, `assets` and `docs` contain verification, build tooling, generated assets and project evidence.
 
-## Optional Rojo live synchronization
-The built place is the simplest handoff; no connection to the running cloud environment is needed. For active Studio iteration, clone the same GitHub commit onto the Studio machine, install the matching official Rojo Studio plugin, run `rojo serve default.project.json` in that clone, and connect the plugin to `localhost:34872`. Review the proposed sync before accepting it. Save source-owned edits in Luau/JSON and commit them back to GitHub. Rojo is not a general two-way Studio-to-source exporter.
+`Config.EnableStudioDataStore`, `Config.EnableAnalytics` are false; `SupporterPassId` is zero. Keep purchases off until real ownership/price/service tests pass. No paid power, paid resets, developer products or receipt handler exists. Existing schema-1 cosmetic fields migrate into schema 2 without becoming combat power. The old DataStore name is intentionally retained for safe migration; Roblox DataStores remain scoped to the owning experience.
 
-Do not expose an unauthenticated Rojo server publicly. A Studio machine cannot reach the cloud workspace using `localhost`; use artifact handoffs or an explicitly configured secure tunnel when needed. The cloud development workflow does not depend on a continuously connected Studio client.
+[Publishing helper](docs/PUBLISHING.md) defaults to a no-network dry run and requires an authorized existing target, reviewed hash and scoped environment key for execution. No Roblox upload/publication occurred. Never commit credentials.
 
-## Repository structure
-
-```text
-src/shared/          Config, profile normalization, economy, shifts, rate limits
-src/server/          World, persistence, authority, purchase/analytics adapters
-src/client/          HUD, workshop, guide/settings, optional reading
- tests/              Lune domain/mocked-adapter checks and publisher guard tests
-scripts/             Pinned tooling, checks, place inspection, guarded publisher
- docs/               Research, design, theology, business, QA, launch, runbooks
-assets/              Placeholder inventory and replacement/rights requirements
-.github/workflows/   Cloud verification and downloadable Studio artifacts
-```
-
-## Services and publishing preparation
-Configure `src/shared/Config.luau` deliberately:
-
-- `EnableStudioDataStore = false`: keep this default for ordinary file previews. To test real saves, create a separate private test experience in Studio, enable Studio API service access there, and use a test-only configuration. Never connect an editable local preview to production player data.
-- Live servers use `Harborlight_Profile_v1` with session leases and UpdateAsync. Failed loads do not become writable defaults. Exercise outage, shutdown and rejoin behavior in the test universe.
-- `SupporterPassId = 0`: no Robux prompts. A future configured pass grants cosmetic ocean trim only; ownership is verified on the server. Create and review the real pass in Creator Dashboard before testing.
-- `EnableAnalytics = false`: enable after private validation; Roblox custom events require published games. No reading/faith data is recorded.
-
-See [Studio setup](docs/STUDIO-SETUP.md) and [publishing runbook](docs/PUBLISHING.md). The publisher defaults to a no-network dry run and requires an existing place, matching reviewed artifact hash, allowed target and environment API key for an explicit execution. No Roblox credentials are in this repository. No place has been uploaded or published by this task.
-
-## What still requires Studio or account access
-Cloud checks cover pure logic, mocked persistence behaviors, syntax compilation, formatting and structural place inspection. They do **not** execute the Roblox engine. Studio and devices are needed for visuals, gameplay feel, touch/controller layouts, multi-client replication, physics, performance, actual persistence and purchase behavior. Creator Dashboard/account access is needed for experience ownership, content classification, assets, pass IDs, analytics and scoped publishing credentials. Publication needs actual authorization and evidence from the release checklist.
-
-Current Roblox guidance addresses sensitive religious themes under 16+ content. Complete the real maturity questionnaire for this experience; optionality alone does not establish an age rating. See [biblical integration and platform review](docs/03-BIBLICAL-INTEGRATION-STRATEGY.md).
+## Current limits and next gate
+See [project status](docs/PROJECT-STATUS.md). Combat balance, responsiveness, UI on real devices, enemy animation quality, save shutdown/concurrency, performance and actual enjoyment need Studio/player tests. The art is original primitive geometry and requires production polish. Current religious-content classification must be answered accurately for the whole experience; optionality does not exempt it. Commercial validation is outstanding; no claim of superiority to top games or guaranteed profitability is made.

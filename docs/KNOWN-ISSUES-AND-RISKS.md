@@ -1,22 +1,23 @@
-# Known issues and risk register
+# Riftwake known issues and risk register
 
-| Priority | Issue/risk | Mitigation / next verification |
+| Priority | Issue | Next verification / mitigation |
 |---|---|---|
-| P0 release gate | No Roblox engine execution or visual playtest | Open generated place in Studio; run full QA matrix |
-| P0 release gate | Content classification for optional Christian reading unresolved | Accurate questionnaire and Roblox clarification if needed; do not assume under-16 distribution |
-| P0 release gate | Live save/session/shutdown behavior unverified | Separate private universe; concurrent sessions, budgets, outages and recovery tests |
-| P1 | Distance/cooldown checks do not detect all speed/teleport abuse | Add measured movement plausibility and server replay tests before competitive/economic stakes increase |
-| P1 | Failed final save can lose recent progress; lease may block quick rejoin | Bounded retries, warning, 180-second lease; validate recovery and dashboard monitoring |
-| P1 | Runtime-generated geometry and GUI have not been visually inspected | Device, collision, text, controller and safe-area tests |
-| P1 | Only three projects; repeated gathering may become a chore | Actual-player study before content expansion |
-| P1 | Crates are shared and may create contention | Eight crate positions, cooldown; test group size and consider per-player availability |
-| P1 | Concept demand, cosmetics conversion and profit unproven | Small observed cohorts and measured financial decisions |
-| P1 | Competitor histories, favorites, sustained growth and detailed store audits incomplete | Expand initial source-backed dossier; direct Roblox API access currently denied |
-| P2 | Placeholder art and built-in feedback sound | Original production assets, rights ledger, engine verification |
-| P2 | No full Luau type analysis with Roblox definitions | Add maintained Roblox type environment before expanding codebase |
-| P2 | Sound/effects settings last only for the current session | Add non-sensitive settings persistence if testers request it |
-| P2 | Supporter pass adapter has no configured ID or real test | Keep disabled until private ownership/price/service tests pass |
-| P2 | Custom analytics disabled; dashboard behavior unverified | Published private test, inspect actual events; never instrument religious reading |
-| P2 | Shutdown and yielding save concurrency only code-reviewed, not fully simulated | Add scheduler/fault tests and actual two-server tests before release |
+| P0 release | No Roblox Studio engine execution or actual playtest | Open current artifact; full solo/two-client/device QA |
+| P0 release | Combat timing/feel, controller input and touch layout unverified | Measure responsiveness and readable charge breaks with real players |
+| P0 release | Live save/shutdown/session migration unverified | Private universe fault/concurrency/recovery tests |
+| P0 release | Whole-experience classification for optional Christian material unresolved | Accurate maturity questionnaire and Roblox clarification if uncertain |
+| P1 | Video gameplay playback blocked in shared browser | DNS_PROBE_FINISHED_NO_INTERNET observed; do not claim watched footage |
+| P1 | Community sample is self-selected and genre demand is crowded | Broaden research and run actual-player validation |
+| P1 | Basic movement bounds are not complete speed/teleport anticheat | Authorized engine tests; tune plausibility without punishing lag |
+| P1 | Anchored enemy pivots at 10 Hz and procedural effects may look stiff | Replication/animation/profiling in engine; production animation pass |
+| P1 | Three regions are a finite slice, not a month of content | Measure enjoyment/exhaustion before new content |
+| P1 | Bosses may be kiteable or stat-check-heavy despite break mechanics | Skill-vs-spam study; redesign patterns if needed |
+| P1 | Terrain/gates/collisions and camera aim need actual spatial tests | Check all landing points, raised terrain, walls, dash and falling |
+| P1 | Failed final save can lose recent progress; lease can delay rejoin | Bounded retries/warnings; real recovery and shutdown tests |
+| P2 | Primitive art, built-in sound and preview lighting are not final assets | Original production polish and actual Studio captures |
+| P2 | Full Roblox-aware Luau type analysis not configured | Add maintained Roblox definitions/checking before major expansion |
+| P2 | UI settings last for the session | Add non-sensitive persistence if requested by testers |
+| P2 | Purchases/analytics deliberately disabled and not service-tested | Keep off until private tests and account setup |
+| P2 | Theological expert review not done | Review original summaries in context before publication |
 
-Theological summaries are original, not translation quotations; qualified contextual review is pending. No credentials, player research data or religious participation records belong in Git.
+No public launch, real player feedback, retention, revenue, purchased advertising or Roblox publication has occurred. No religious reading or belief data is collected. Old Harborlight artifacts may remain locally; use the latest Riftwake build and commit hash.

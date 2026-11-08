@@ -15,7 +15,7 @@ There is no Roblox place/universe configuration or Open Cloud key in this projec
 After a build:
 
 ```bash
-python3 scripts/publish.py --place-id YOUR_EXISTING_PLACE_ID --file build/Harborlight.rbxl
+python3 scripts/publish.py --place-id YOUR_EXISTING_PLACE_ID --file build/Riftwake.rbxl
 ```
 
 This inspects the binary header and prints bytes/hash/target without accessing credentials or making an API call. The place ID `1` in cloud checks is a dummy dry-run target, not this project’s Roblox place.
@@ -32,9 +32,9 @@ Configure in environment settings/secrets (never in chat or source):
 Only after the concrete artifact and target are authorized:
 
 ```bash
-python3 scripts/publish.py --place-id YOUR_EXISTING_PLACE_ID --file build/Harborlight.rbxl --execute
+python3 scripts/publish.py --place-id YOUR_EXISTING_PLACE_ID --file build/Riftwake.rbxl --execute
 ```
 
-Success must include a verified revision identifier. An operation timeout means status is unresolved: inspect the operation/dashboard before retrying. Do not claim an upload was rolled back by reverting Git. Rollback requires a prior verified artifact/revision and a separately authorized place update; record the resulting new revision. Some Roblox instance types require Studio publication; see official limitations before adding advanced assets. Current world uses basic Parts/scripts.
+Success must include a verified revision identifier. An operation timeout means status is unresolved: inspect the operation/dashboard before retrying. Do not claim an upload was rolled back by reverting Git. Rollback requires a prior verified artifact/revision and a separately authorized place update; record the resulting new revision. Some Roblox instance types require Studio publication; see official limitations before adding advanced assets. Current world uses basic Parts/scripts and a baked original model.
 
 The helper does not create experiences, configure permissions, change public visibility, complete policy questionnaires or buy advertisements. No publishing workflow is installed that can run unattended. Publishing support is prepared for future authorized use.

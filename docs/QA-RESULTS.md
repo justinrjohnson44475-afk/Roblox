@@ -1,21 +1,19 @@
-# Verification record
+# Current verification — Riftwake replacement
 
-Research/development session: November 7, 2026 client date; cloud commands ran November 8 UTC.
+November 8, 2026. Earlier Harborlight checks are historical and do not verify this new implementation.
 
-| Check | Observed result | Limit |
+| Check | Observed | Boundary |
 |---|---|---|
-| Pinned tools | Rojo 7.7.1, Lune 0.11.1, StyLua 2.6.0 executed | Official release binaries; archive hashes recorded locally |
-| Lune suite | 52 checks passed | Includes domain, mocked adapter, syntax and generated DOM; not engine behavior |
-| Python publisher suite | 9 tests passed | No Roblox network requests |
-| Formatting | StyLua check passed | No full Roblox type/API checking |
-| Rojo binary build | Success | Not opened in Studio |
-| Rojo XML build | Success | Not opened in Studio |
-| Place deserialization | Both files contain 12 nonempty expected scripts and required services/floor/spawn | Structural only |
-| Publisher dry run | Target/hash/bytes printed; no upload | No API credentials or live integration |
-| GitHub Actions | [Run 42435421673 passed](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42435421673) for implementation commit 7efbc7b; tool install, tests/build and artifact upload succeeded | Separate remote CI observation; not Roblox runtime testing |
-| Roblox Studio / real devices | NOT RUN | Engine/visual/mobile/controller tests pending |
-| Actual player study | NOT RUN | No feedback or retention data |
-| Live DataStore / Marketplace | NOT RUN | Mock tests only; purchases disabled |
-| Roblox publication | NOT PERFORMED | No target place or scoped key configured |
+| Lune suite | 77 checks passed | Domain, mocked persistence, syntax and DOM; no engine |
+| Publisher Python suite | 9 tests passed | No API requests |
+| Formatting | StyLua passed | Not full Roblox-aware type checking |
+| Bake | Original world serialized successfully | Lune DOM does not simulate physics/engine |
+| Binary/XML builds | Both succeeded | Not opened in Studio |
+| Structural inspection | Both contain 17 nonempty source scripts and 686 anchored map parts | Four regions, spawn, services and no scripts embedded in generated map |
+| Blender previsualization | Geometry exported and layout/rig previews inspected | Not Studio screenshots; preview avatar is a mannequin |
+| Video playback | Attempt failed with DNS_PROBE_FINISHED_NO_INTERNET | No watched-footage claim |
+| Roblox / devices / players | NOT TESTED | Combat feel, replication, UI, physics and enjoyment unknown |
+| Live services | NOT TESTED | Purchases/analytics off; DataStore mock tests only |
+| Roblox publishing | NOT PERFORMED | Dry run only |
 
-Reproduce: `bash scripts/bootstrap.sh` then `bash scripts/check.sh`. Logs are generated into build/. Hashes are in build/SHA256SUMS and GitHub build artifacts. Actual Studio results must be appended with commit, artifact hash, device and evidence; never replace pending rows with inferred success.
+Reproduce with `bash scripts/check.sh`. Current logs/hashes are in build/; latest GitHub replacement workflow results must be checked separately. Follow document 08 for actual test records with commit/hash, Studio version, device, steps, expected/actual outcome and evidence paths.

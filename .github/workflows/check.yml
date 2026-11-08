@@ -17,6 +17,11 @@ jobs:
         run: bash scripts/check.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: Harborlight-Studio-${{ github.sha }}
-          path: build/
+          name: Riftwake-Studio-${{ github.sha }}
+          path: |
+            build/*.rbxl
+            build/*.rbxlx
+            build/*.txt
+            build/SHA256SUMS
+            assets/previews/*.png
           retention-days: 14

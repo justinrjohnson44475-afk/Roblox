@@ -20,7 +20,7 @@ function Purchases.prompt(player)
 		return false, "Robux purchases are not enabled in this build"
 	end
 	if owned[player] then
-		return false, "You already own the ocean lantern trim"
+		return false, "You already own the ocean rig trim"
 	end
 	local ok = pcall(function()
 		MarketplaceService:PromptGamePassPurchase(player, Config.SupporterPassId)

@@ -8,7 +8,7 @@ local Profile = require(Shared.Profile)
 local DataService = {}
 local entries = {}
 local memoryOnly = RunService:IsStudio() and not Config.EnableStudioDataStore
-local store = if memoryOnly then nil else DataStoreService:GetDataStore("Harborlight_Profile_v1")
+local store = if memoryOnly then nil else DataStoreService:GetDataStore(Config.DataStoreName)
 local session = game.JobId .. ":" .. HttpService:GenerateGUID(false)
 
 function DataService.load(player)
@@ -30,7 +30,7 @@ function DataService.load(player)
 		end)
 	end)
 	if not ok or not result then
-		warn("Harborlight profile load failed:", err)
+		warn("Riftwake profile load failed:", err)
 		return false
 	end
 	entries[player] =
@@ -103,7 +103,7 @@ function DataService.save(player, release: boolean): boolean
 			player:SetAttribute("SaveWarning", false)
 			break
 		end
-		warn("Harborlight save failed", player.UserId, attempt, err)
+		warn("Riftwake save failed", player.UserId, attempt, err)
 		if lostLease then
 			break
 		end

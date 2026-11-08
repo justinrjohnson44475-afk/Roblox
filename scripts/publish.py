@@ -61,11 +61,11 @@ def published_revision(response, place_id):
 
 
 def publish(data, place_id, api_key):
-    boundary = "Harborlight" + hashlib.sha256(data).hexdigest()
+    boundary = "Riftwake" + hashlib.sha256(data).hexdigest()
     request_json = json.dumps({"assetId": int(place_id), "assetType": "Place", "published": True})
     body = (
         f'--{boundary}\r\nContent-Disposition: form-data; name="request"\r\n\r\n{request_json}\r\n'
-        f'--{boundary}\r\nContent-Disposition: form-data; name="fileContent"; filename="Harborlight.rbxl"\r\n'
+        f'--{boundary}\r\nContent-Disposition: form-data; name="fileContent"; filename="Riftwake.rbxl"\r\n'
         'Content-Type: application/octet-stream\r\n\r\n'
     ).encode() + data + f"\r\n--{boundary}--\r\n".encode()
     opener = urllib.request.build_opener(NoRedirect())

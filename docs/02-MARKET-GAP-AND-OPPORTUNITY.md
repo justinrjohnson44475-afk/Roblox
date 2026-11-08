@@ -1,3 +1,5 @@
+> Superseded November 8, 2026: the owner rejected Harborlight. See documents 10 and 11 for the research correction and current concept. This document preserves the original decision rather than presenting it as current.
+
 # Opportunity decision
 
 ## Candidate concepts and scoring

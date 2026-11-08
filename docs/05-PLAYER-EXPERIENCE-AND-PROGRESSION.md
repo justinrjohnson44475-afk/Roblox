@@ -1,17 +1,23 @@
-# Player journey and pacing
+# Riftwake player journey and progression
 
-| Stage | Intended experience | Implemented or planned | Evidence needed |
-|---|---|---|---|
-| 0–30 seconds | Spawn facing help board and supply route; HUD says recover then contribute | Slice | Observe first action without coaching |
-| First 5 minutes | Finish a shared project and notice visible repair | Slice | Time-to-first-contribution; comprehension |
-| First 20 minutes | Complete shifts, try a lantern color, help newcomers | Slice | Actual enjoyment and repetition fatigue |
-| First session | Stop at a natural shift boundary with tokens retained | Slice | Save/rejoin test and exit interviews |
-| Second session | Resume cosmetic goal; meet another crew | Slice, limited variety | Independent return behavior |
-| First week | Discover authored route variants | Planned | D1/D7 cohorts and content consumption |
-| First month | Decorate a personal cabin, revisit new repairs | Planned | D30 cohorts and willingness to pay |
+Supersedes Harborlight. Intent is measurable character growth, not extending sessions with chores. All pacing below is a design target, not observed player behavior.
 
-Pacing assumptions: a solo collection/deposit cycle should take 20–45 seconds, unverified. First project takes eight supplies, while capacity five requires two trips. A full shift requires 36 supplies for 72 tokens; exact travel speed and crate contention determine completion rate. The four-minute timer may be too short for solo play; measure and adjust Config rather than guessing a successful balance. There is no purchased speed or capacity advantage.
+| Stage | Player capability / goal | Evidence required |
+|---|---|---|
+| First 30 seconds | See the character, regional gates and clear first destination | Observe independent first action |
+| First encounter | Strike combo, respond to a visible charge, learn dash | Engine input timing and enemy readability |
+| First few encounters | Reach level 2 and earn Coreburst | Verify players notice/use the new move |
+| First warden | Time a charge break and punish the exposed core | Compare standing attack spam vs deliberate play |
+| First forge return | Buy known stat upgrades; evolve to Awakened and see new shoulders/gauntlet | Verify effect, exact cost, visible difference |
+| Second region | Choose a level-3 build path; adapt to aimed charges and Cinder echo attacks | Test free build experimentation and solo/group viability |
+| Later first session | Level 5 Overdrive, Ember clear, level 6 Astral gate and Ascendant form | Observe actual progression time and fatigue |
+| Subsequent sessions | Learn Crownless phase-two zones, earn Stormforged, try other builds | Real return behavior, content exhaustion and enjoyment |
+| Week/month | New authored encounters, gear interactions and varied routes | Planned only; current slice does not contain a month of content |
 
-No forced login streak, expiring personal currency, religious objective, scarcity store or punishment for skipping a day. Cosmetic costs communicate concrete goals. Personal counters recognize contribution, never holiness or beliefs. Persistent tokens create a second-session goal but currently there is too little content for a month of healthy repeat play. Expand only after the basic loop earns positive observed feedback.
+XP threshold for level L is `(L-1)*40 + ((L-1)*(L-2)/2)*20`, capped at level 15. First few thresholds: 0, 40, 100, 180, 280, 400, 540, 700. Coreburst unlocks at 2, paths at 3, Overdrive at 5. Regions require both level and previous warden clear. Power adds strike damage, Vitality adds health, Flow shortens cooldowns within caps. Form upgrades add modest stats and increasingly visible rig pieces.
 
-Validation gates are internal targets, not industry benchmarks: at least 80% of 12–20 observed testers should contribute without verbal coaching; zero known reward duplication or destructive save bugs; compare solo and group completion rates. For retention, report sample size, cohort window, acquisition channel and confidence intervals before deciding a target. Do not infer real retention from stated return intent.
+One warden first clear gives its normal rewards plus 50 XP and 25 shards. Repeats give the normal rewards. Eligible recent contributors receive rewards once per incarnation; no last-hit monopoly. The domain route test shows three ordinary encounters and a warden per region can meet the next gates with default rewards. This arithmetic does not prove that fights are achievable or fun.
+
+Vanguard: higher health and wider Coreburst, slightly reduced strike damage. Strider: more frequent dashes and one empowered follow-up strike, slightly less health. Arcanist: longer strike reach and cheaper/stronger burst, lower health. Changes are free at the sanctuary forge; no reroll purchase or stat-reset fee. Stat upgrades are guaranteed and permanent.
+
+Death resets combat Focus and returns to the sanctuary, retaining earned progress. An abandoned enemy encounter resets after eight seconds without a target; progression should not depend on repeatedly dying to chip down a boss. No login streak loss, random downgrade or religious milestone exists. Evaluate whether the short slice has enough combat variation before extending any progression curve.

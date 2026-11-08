@@ -1,47 +1,35 @@
-# Project status
+# Project status — Riftwake: Ascend
 
-Updated November 7, 2026 client date; cloud execution crossed into November 8 UTC.
+Updated November 8, 2026. Harborlight is superseded following the owner’s rejection. Its implementation remains in Git history.
 
-## Current phase
-First cloud-first vertical slice implemented and automatically checked. Pre-Studio verification and commercial validation remain. The full product is not complete or launch-ready.
+## Current direction
+Character-centered PvE action RPG: charged-attack breaks, exposed cores, earned abilities, deterministic forging, visible rig evolution and harder regional wardens. Current reasoning and evidence are in documents 10 and 11. The initial listing-based research was insufficient to justify the prior concept; the correction is explicit.
 
-## Completed
-- Initial dated, source-backed twenty-game market dossier, five-concept comparison and Harborlight selection.
-- Design, player journey, architecture, biblical integration, financial scenarios, QA and launch strategy documents (00–09).
-- Luau/Rojo client/server/shared project; generated harbor world with eight supply points and three shared repairs.
-- Repeatable shift loop, contribution tokens, cosmetic ownership/equipping, player HUD, guide and session settings.
-- DataStore adapter using UpdateAsync, session leases, failed-load protection, save warnings and bounded retries.
-- Explicit optional Christian reading without progression, tracking or economic ties.
-- Cosmetic pass adapter and custom analytics adapter, both disabled by default.
-- Pinned tooling, GitHub Actions artifact workflow, binary/XML builds, Studio setup and guarded future publishing helper.
+## Implemented remotely
+- Source/community research expansion and five-concept comparison.
+- Three combat regions and forge sanctuary baked from original Luau geometry into Studio-editable place content.
+- Strike combos, timed dash, Focus, earned Coreburst/Overdrive, charge interrupts, exposed damage windows, enemy state machines and boss phase variations.
+- XP, level gates, persistent shards/cores, upgrade ranks, four rig forms, three freely swappable earned build paths and warden-first-clear flags.
+- Validated server actions, region/proximity/movement bounds, participant reward deduplication, profile schema migration and guarded persistence.
+- New HUD, forge cards, journey/settings, keyboard/gamepad/touch bindings, bounded cosmetic effects and optional unrewarded Christian reading.
+- Geometry export and Blender visual inspection of actual authored models, with preview/mannequin limitations documented.
+- Updated tests/build/inspection and GitHub artifact workflow. Robux purchase and custom analytics adapters remain disabled.
 
-## Research findings and uncertainties
-Collection, visible progression and shared play recur across the sampled games. Third-party snapshots show historical leaders are not a sufficient current ranking. Competitor revenue, retention, release histories, sustained growth and many detailed UX/store metrics remain unverified. Anecdotal grind/loss feedback suggests a hypothesis, not a proven underserved market. The selected restoration loop needs actual-player evidence. Financial scenarios remain assumptions; the base case loses money.
+## Verified cloud results
+77 Luau domain/mock/DOM/compilation checks passed; 9 Python publisher tests passed. StyLua passed. Rojo binary and XML place builds succeeded. Both deserialize with 17 source scripts and 686 baked anchored world parts across four regions. The bake and preview export also include runtime-style boss geometry for scale. Publisher dry run makes no network upload.
 
-Current Roblox policy guidance covers sensitive religious themes under 16+ content. Optional reading does not establish a rating exemption. The complete experience needs an accurate questionnaire and clarification where necessary before distribution.
+The logic route test demonstrates gate/reward arithmetic, not player skill, pacing or fun. Blender previsualizations verify some composition/model geometry only, not Roblox rendering, UI, collision or playability. GitHub remote CI for this replacement is recorded after push rather than inferred from the previous Harborlight run.
 
-## Verified in this cloud workspace
-- Rojo 7.7.1, Lune 0.11.1, StyLua 2.6.0 executed.
-- 52 Luau checks passed: domain behavior, mocked persistence faults/leases, source compilation and generated-world structure.
-- 9 Python publisher guard tests passed, without API requests.
-- StyLua formatting check passed.
-- Binary `build/Harborlight.rbxl` and XML `build/Harborlight.rbxlx` built successfully.
-- Both places deserialized with twelve expected nonempty scripts, service mappings, floor and spawn.
-- Publishing helper dry run succeeded; no network upload or publication occurred.
-- Logs and SHA256 hashes generated in build/. GitHub Actions status is separate from these local cloud results.
+## Research observation limits
+Read official listings, mechanic references and several specific community discussions including praise and counterviews. Attempted shared-browser video playback; it ended at DNS_PROBE_FINISHED_NO_INTERNET. No gameplay footage was watched and no competitor was played. Statements about requests are qualitative and self-selected, not market-share or causal-retention evidence.
 
 ## Not performed
-Roblox Studio execution; visual or real-device playtests; engine multiplayer/physics/performance tests; actual player feedback; live DataStore/Marketplace/analytics verification; theological expert review; maturity questionnaire; Roblox upload/publication. No target place/universe or Roblox API secret is configured. Do not infer these results from the build.
+Roblox engine execution, Studio visual/device/multiplayer tests, real player research, live DataStore/Marketplace/analytics integration, full Roblox type analysis, expert theological review, content questionnaire, asset publication or Roblox game publication. No Roblox target/key is configured. No claim of being better than top games, launch readiness or guaranteed revenue is supported.
 
-## Next priority work
-1. Run the generated artifact in Studio and record solo/two-client/device results against QA document 08.
-2. Validate actual save/lease/shutdown behavior in a separate private test universe.
-3. Observe real testers and improve recovery variety/onboarding before commissioning extensive content.
-4. Expand official metric snapshots, close-competitor research, release histories and store/feedback audits.
-5. Resolve content classification and review theological summaries/asset rights.
-6. Only then configure fair cosmetic offers, analytics and an owner-authorized private release.
+## Next actions
+1. Actual Studio combat/controls/visual tests, then observed real-player sessions focused on charge breaks, character-growth motivation and repetition.
+2. Real private-universe persistence/authority/service tests and engine profiling.
+3. Fix weak combat/visuals based on those observations before expanding content.
+4. Resolve classification, theological and asset review; then authorized closed beta and measured cohorts.
 
-## User/account involvement
-No laptop or Local mode is required for ongoing cloud source work, research, automated checks and builds. Studio verification needs a supported Windows/macOS Studio host when scheduled; no such host is configured for this task. The owner must eventually supply/authorize private experience ownership, real place/pass IDs, account settings, content declaration and scoped publishing credentials via settings/secrets. No secrets should be pasted in chat. These prerequisites do not prevent further cloud coding.
-
-See KNOWN-ISSUES-AND-RISKS.md, QA-RESULTS.md, STUDIO-SETUP.md and PUBLISHING.md. GitHub source delivery verified: initial implementation commit `7efbc7be00d2fc07ca020d31ce35c98299ce88dc` is on `origin/main` in [the connected repository](https://github.com/justinrjohnson44475-afk/Roblox). [GitHub Actions run 42435421673](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42435421673) completed successfully: checkout, pinned tool installation, test/build and artifact upload all passed. Artifact `Harborlight-Studio-7efbc7be00d2fc07ca020d31ce35c98299ce88dc` (ID 13599252701) was present and unexpired when checked. Later documentation-only updates do not change that verified implementation artifact.
+Cloud code, research and builds do not need the owner’s laptop on or a Local-mode switch. A supported Studio host is needed for the engine gates; an authorized remote host could supply that later. Setup, release prerequisites and remaining risks are documented separately. No credentials belong in chat or Git.

@@ -1,16 +1,106 @@
 {
-  "name": "Harborlight",
+  "name": "Riftwake",
   "tree": {
     "$className": "DataModel",
-    "ReplicatedStorage": {"Shared": {"$path": "src/shared"}},
-    "ServerScriptService": {"Server": {"$path": "src/server"}},
-    "StarterPlayer": {"StarterPlayerScripts": {"Client": {"$path": "src/client"}}},
-    "Workspace": {
-      "$properties": {"FilteringEnabled": true, "Gravity": 196.2},
-      "HarborFoundation": {"$className": "Part", "$properties": {"Anchored": true, "Size": [110, 2, 90], "Position": [0, -1, 0], "Color": [0.24, 0.32, 0.32]}},
-      "Spawn": {"$className": "SpawnLocation", "$properties": {"Anchored": true, "Neutral": true, "Size": [8, 1, 8], "Position": [0, 1, 28]}}
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      }
     },
-    "Lighting": {"$properties": {"ClockTime": 17, "Brightness": 2, "Ambient": [0.5, 0.55, 0.6]}},
-    "SoundService": {"$properties": {"RespectFilteringEnabled": true}}
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "Gravity": 196.2
+      },
+      "RiftwakeWorld": {
+        "$path": "assets/world.rbxmx"
+      },
+      "Spawn": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "Neutral": true,
+          "Size": [
+            6,
+            1,
+            6
+          ],
+          "Position": [
+            0,
+            2,
+            27
+          ],
+          "Transparency": 1,
+          "CanCollide": false,
+          "Duration": 0
+        }
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "ClockTime": 16.6,
+        "Brightness": 2.5,
+        "Ambient": [
+          0.3,
+          0.36,
+          0.47
+        ],
+        "OutdoorAmbient": [
+          0.5,
+          0.55,
+          0.63
+        ],
+        "GlobalShadows": true
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.27,
+          "Offset": 0.1,
+          "Color": [
+            0.53,
+            0.67,
+            0.8
+          ],
+          "Decay": [
+            0.19,
+            0.27,
+            0.4
+          ],
+          "Haze": 1.6
+        }
+      },
+      "Bloom": {
+        "$className": "BloomEffect",
+        "$properties": {
+          "Intensity": 0.25,
+          "Size": 24,
+          "Threshold": 1.3
+        }
+      },
+      "ColorGrade": {
+        "$className": "ColorCorrectionEffect",
+        "$properties": {
+          "Contrast": 0.07,
+          "Saturation": 0.03
+        }
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
   }
 }

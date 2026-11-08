@@ -4,9 +4,12 @@ local luau = require("@lune/luau")
 local roblox = require("@lune/roblox")
 local Config = require("../src/shared/Config")
 local Profile = require("../src/shared/Profile")
-local Economy = require("../src/shared/Economy")
-local Shift = require("../src/shared/Shift")
+local Progression = require("../src/shared/Progression")
+local Combat = require("../src/shared/Combat")
+local EnemyAI = require("../src/shared/EnemyAI")
+local Authority = require("../src/shared/Authority")
 local RateLimit = require("../src/shared/RateLimit")
+local Economy = require("../src/shared/Economy")
 local passed = 0
 local function test(name, fn)
 	local ok, err = pcall(fn)
@@ -23,37 +26,33 @@ local function rejects(fn)
 	equal(pcall(fn), false)
 end
 
-test("new profile has only free color", function()
+test("new hero has schema 2 and no unearned progression", function()
 	local p = Profile.new()
-	equal(p.Tokens, 0)
+	equal(p.Schema, 2)
+	equal(p.XP, 0)
+	equal(p.Form, 0)
+	equal(p.Cores, 0)
 	equal(p.Owned.amber, true)
-	equal(p.Owned.sea, nil)
 end)
-test("profiles do not share inventory tables", function()
-	local p = Profile.new()
-	p.Owned.sea = true
-	equal(Profile.new().Owned.sea, nil)
-end)
-test("nil data initializes safely", function()
-	equal(Profile.decode(nil).Schema, 1)
-end)
-for _, value in { math.huge, -math.huge, 0 / 0, "900", {} } do
-	test("invalid currency is sanitized: " .. tostring(value), function()
-		local p = Profile.new()
-		p.Tokens = value
-		equal(Profile.decode(p).Tokens, 0)
-	end)
-end
-test("negative and fractional counters normalized", function()
-	local p = Profile.new()
-	p.Tokens = -3
-	p.Donated = 12.9
-	equal(Profile.decode(p).Tokens, 0)
-	equal(Profile.decode(p).Donated, 12)
+test("legacy harbor data migrates without deleting cosmetic balances", function()
+	local p = Profile.decode({
+		Schema = 1,
+		Tokens = 72,
+		Donated = 36,
+		Repairs = 3,
+		Owned = { sea = true },
+		Equipped = "sea",
+	})
+	equal(p.Schema, 2)
+	equal(p.Tokens, 72)
+	equal(p.Donated, 36)
+	equal(p.Repairs, 3)
+	equal(p.Equipped, "sea")
+	equal(p.XP, 0)
 end)
 test("future schema refuses overwrite", function()
 	rejects(function()
-		Profile.decode({ Schema = 2 })
+		Profile.decode({ Schema = 99 })
 	end)
 end)
 test("corrupt root refuses overwrite", function()
@@ -61,43 +60,146 @@ test("corrupt root refuses overwrite", function()
 		Profile.decode("bad")
 	end)
 end)
-test("unknown cosmetics and unowned equipment removed", function()
+for _, value in { math.huge, -math.huge, 0 / 0, "999", {} } do
+	test("nonfinite or nonnumeric progression rejected: " .. typeof(value), function()
+		local p = Profile.new()
+		p.Shards = value
+		p.XP = value
+		equal(Profile.decode(p).Shards, 0)
+		equal(Profile.decode(p).XP, 0)
+	end)
+end
+test("profile caps forged ranks/forms and unknown choices", function()
 	local p = Profile.new()
-	p.Owned.hacked = true
+	p.Form = 999
+	p.Upgrades.power = 999
+	p.Path = "admin"
 	p.Equipped = "hacked"
-	local clean = Profile.decode(p)
-	equal(clean.Owned.hacked, nil)
-	equal(clean.Equipped, "amber")
+	p.Owned.hacked = true
+	local q = Profile.decode(p)
+	equal(q.Form, 3)
+	equal(q.Upgrades.power, 8)
+	equal(q.Path, "vanguard")
+	equal(q.Equipped, "amber")
+	equal(q.Owned.hacked, nil)
 end)
-test("profile copy does not alias saved inventory", function()
+test("saved profile copy cannot alias mutable inventory, upgrades or clears", function()
 	local p = Profile.new()
 	local q = Profile.copy(p)
 	q.Owned.sea = true
+	q.Upgrades.power = 2
+	q.Clears.verdant_warden = true
 	equal(p.Owned.sea, nil)
+	equal(p.Upgrades.power, 0)
+	equal(p.Clears.verdant_warden, nil)
 end)
-test("contribution capped at exact project requirement", function()
+test("XP thresholds and boundary levels are consistent", function()
+	for level = 1, 15 do
+		equal(Progression.level(Progression.threshold(level)), level)
+		if level > 1 then
+			equal(Progression.level(Progression.threshold(level) - 1), level - 1)
+		end
+	end
+	equal(Progression.level(1000000000), 15)
+end)
+test("region gate requires BOTH level and prior warden", function()
 	local p = Profile.new()
-	equal(Economy.deposit(p, 5, 2, Config), 2)
-	equal(p.Tokens, 4)
-	equal(p.Donated, 2)
+	local ember = Config.Regions[3]
+	equal(Progression.canEnter(p, ember), false)
+	p.XP = 1000
+	equal(Progression.canEnter(p, ember), false)
+	p.Clears.verdant_warden = true
+	equal(Progression.canEnter(p, ember), true)
 end)
-test("negative contribution cannot mint currency", function()
+test("upgrade cost is deterministic and cannot overspend", function()
 	local p = Profile.new()
-	equal(Economy.deposit(p, -5, 10, Config), 0)
-	equal(p.Tokens, 0)
+	p.Shards = 20
+	equal(Progression.upgrade(p, "power", Config), true)
+	equal(p.Shards, 0)
+	equal(p.Upgrades.power, 1)
+	equal(Progression.upgrade(p, "power", Config), false)
+	equal(p.Shards, 0)
 end)
-test("empty or complete projects grant no reward", function()
+for _, input in { {}, true, 999, "invalid", string.rep("x", 500) } do
+	test("malformed forge upgrade rejected: " .. typeof(input), function()
+		local p = Profile.new()
+		p.Shards = 999
+		equal(Progression.upgrade(p, input, Config), false)
+		equal(p.Shards, 999)
+	end)
+end
+test("maxed upgrades never charge again", function()
 	local p = Profile.new()
-	equal(Economy.deposit(p, 5, 0, Config), 0)
-	equal(p.Tokens, 0)
+	p.Shards = 999
+	p.Upgrades.power = 8
+	equal(Progression.upgrade(p, "power", Config), false)
+	equal(p.Shards, 999)
 end)
-test("insufficient tokens leave state unchanged", function()
+test("rig evolution requires milestone and consumes exact currencies once", function()
 	local p = Profile.new()
-	equal(Economy.equip(p, "sea", Config), false)
-	equal(p.Tokens, 0)
-	equal(p.Equipped, "amber")
+	p.XP = 1000
+	p.Shards = 100
+	p.Cores = 1
+	equal(Progression.evolve(p, Config), false)
+	p.Clears.verdant_warden = true
+	equal(Progression.evolve(p, Config), true)
+	equal(p.Form, 1)
+	equal(p.Shards, 65)
+	equal(p.Cores, 0)
+	equal(Progression.evolve(p, Config), false)
+	equal(p.Shards, 65)
 end)
-test("purchase debits once; reequipping is free", function()
+test("path changes are earned, free and mechanically different", function()
+	local p = Profile.new()
+	equal(Progression.path(p, "strider", Config), false)
+	p.XP = 100
+	local original = Progression.stats(p, Config)
+	equal(Progression.path(p, "strider", Config), true)
+	local fast = Progression.stats(p, Config)
+	assert(fast.DashCooldown < original.DashCooldown and fast.Health < original.Health)
+	Progression.path(p, "arcanist", Config)
+	local mage = Progression.stats(p, Config)
+	assert(
+		mage.Range > original.Range and mage.BurstCost < original.BurstCost and mage.Health < original.Health
+	)
+	equal(p.Shards, 0)
+end)
+test("first boss clear bonus applies once; ordinary replay rewards remain", function()
+	local p = Profile.new()
+	equal(Progression.reward(p, "verdant_warden", Config), true)
+	equal(p.XP, 155)
+	equal(p.Shards, 85)
+	equal(p.Cores, 1)
+	equal(Progression.reward(p, "verdant_warden", Config), false)
+	equal(p.XP, 260)
+	equal(p.Shards, 145)
+	equal(p.Cores, 2)
+end)
+test("three-region route can unlock next capabilities without forced mob quotas", function()
+	local p = Profile.new()
+	for _ = 1, 3 do
+		Progression.reward(p, "sentry", Config)
+	end
+	assert(Progression.level(p.XP) >= 2)
+	Progression.reward(p, "verdant_warden", Config)
+	equal(Progression.canEnter(p, Config.Regions[3]), true)
+	equal(Progression.evolve(p, Config), true)
+	for _ = 1, 3 do
+		Progression.reward(p, "lancer", Config)
+	end
+	Progression.reward(p, "ember_warden", Config)
+	equal(Progression.canEnter(p, Config.Regions[4]), true)
+	assert(Progression.level(p.XP) >= 6)
+	equal(Progression.evolve(p, Config), true)
+	for _ = 1, 3 do
+		Progression.reward(p, "lancer", Config)
+	end
+	Progression.reward(p, "astral_warden", Config)
+	assert(Progression.level(p.XP) >= 8)
+	equal(Progression.evolve(p, Config), true)
+	equal(p.Form, 3)
+end)
+test("cosmetic reequipping does not double charge", function()
 	local p = Profile.new()
 	p.Tokens = 60
 	equal(Economy.equip(p, "sea", Config), true)
@@ -106,87 +208,190 @@ test("purchase debits once; reequipping is free", function()
 	Economy.equip(p, "sea", Config)
 	equal(p.Tokens, 30)
 end)
-for _, value in { {}, 99, true, "unknown", string.rep("x", 1000) } do
-	test("malformed cosmetic request rejected: " .. typeof(value), function()
-		local p = Profile.new()
-		equal(Economy.equip(p, value, Config), false)
-		equal(p.Tokens, 0)
+test("combat aim normalizes a finite horizontal vector", function()
+	local aim = Combat.aim({ x = 3, y = 0, z = 4 })
+	equal(aim.x, 0.6)
+	equal(aim.z, 0.8)
+	equal(aim.y, 0)
+end)
+for _, input in
+	{
+		{ x = 0, y = 0, z = 0 },
+		{ x = math.huge, y = 0, z = 1 },
+		{ x = 0 / 0, y = 0, z = 1 },
+		{ x = "1", y = 0, z = 1 },
+		{},
+		true,
+	}
+do
+	test("malformed aim rejected: " .. tostring(input), function()
+		equal(Combat.aim(input), nil)
 	end)
 end
-test("rate limit rejects repeats and allows boundary", function()
-	local b = {}
-	equal(RateLimit.allow(b, "a", 10, 1), true)
-	equal(RateLimit.allow(b, "a", 10.9, 1), false)
-	equal(RateLimit.allow(b, "a", 11, 1), true)
-end)
-test("players have independent rate limits", function()
-	local b = {}
-	RateLimit.allow(b, 1, 10, 1)
-	equal(RateLimit.allow(b, 2, 10, 1), true)
-end)
-test("partial repair records contributors without completing", function()
-	local s = Shift.new(Config, 0)
-	equal(Shift.add(s, 1, 3, Config), false)
-	equal(s.Progress, 3)
-	equal(s.Contributors[1], true)
-end)
-test("completion rewards distinct participants once", function()
-	local s = Shift.new(Config, 0)
-	Shift.add(s, 1, 3, Config)
-	Shift.add(s, 1, 2, Config)
-	local done, participants = Shift.add(s, 2, 3, Config)
-	equal(done, true)
-	equal(participants[1], true)
-	equal(participants[2], true)
-	equal(s.Index, 2)
-	equal(s.Progress, 0)
-	equal(next(s.Contributors), nil)
-end)
-test("overfilled, negative and fractional repairs rejected", function()
-	for _, amount in { 9, -1, 0, 0.5 } do
-		rejects(function()
-			Shift.add(Shift.new(Config, 0), 1, amount, Config)
-		end)
-	end
-end)
-test("full solo loop conserves supplies and rewards; replay resets shared state", function()
-	local s = Shift.new(Config, 0)
+test("locked abilities and insufficient Focus cannot spend or start cooldown", function()
 	local p = Profile.new()
-	local total = 0
-	for _, project in Config.Projects do
-		local remaining = project.Required
-		while remaining > 0 do
-			local amount = Economy.deposit(p, 5, remaining, Config)
-			local done = Shift.add(s, 1, amount, Config)
-			if done then
-				p.Repairs += 1
-			end
-			remaining -= amount
-			total += amount
-		end
-	end
-	equal(total, 36)
-	equal(p.Tokens, 72)
-	equal(p.Donated, 36)
-	equal(p.Repairs, 3)
-	equal(s.Complete, true)
-	equal(Shift.add(s, 1, 1, Config), false)
-	local replay = Shift.new(Config, 300)
-	equal(replay.Index, 1)
-	equal(p.Tokens, 72)
+	local stats = Progression.stats(p, Config)
+	local s = Combat.new()
+	s.Focus = 100
+	equal(Combat.action(s, "burst", 10, stats, p.Path), false)
+	equal(s.Focus, 100)
+	equal(s.Last.burst, nil)
+	p.XP = 40
+	stats = Progression.stats(p, Config)
+	s.Focus = 59
+	equal(Combat.action(s, "burst", 10, stats, p.Path), false)
+	equal(s.Focus, 59)
 end)
-test("multi-player repair yields same tokens per unit", function()
-	local s = Shift.new(Config, 0)
-	local a, b = Profile.new(), Profile.new()
-	Shift.add(s, 1, Economy.deposit(a, 5, 8, Config), Config)
-	local done = Shift.add(s, 2, Economy.deposit(b, 5, 3, Config), Config)
-	equal(done, true)
-	equal(a.Tokens + b.Tokens, 16)
-	equal(b.Donated, 3)
+test("burst consumes server Focus; spam is rejected", function()
+	local p = Profile.new()
+	p.XP = 40
+	local stats = Progression.stats(p, Config)
+	local s = Combat.new()
+	s.Focus = 100
+	equal(Combat.action(s, "burst", 10, stats, p.Path), true)
+	equal(s.Focus, 40)
+	equal(Combat.action(s, "burst", 10.2, stats, p.Path), false)
+	equal(s.Focus, 40)
+end)
+test("strike combo has three steps and resets after a pause", function()
+	local p = Profile.new()
+	local stats = Progression.stats(p, Config)
+	local s = Combat.new()
+	local _, a = Combat.action(s, "strike", 10, stats, p.Path)
+	local _, b = Combat.action(s, "strike", 10.5, stats, p.Path)
+	local _, c = Combat.action(s, "strike", 11, stats, p.Path)
+	equal(a.Combo, 1)
+	equal(b.Combo, 2)
+	equal(c.Combo, 3)
+	assert(c.Damage > a.Damage)
+	local _, reset = Combat.action(s, "strike", 14, stats, p.Path)
+	equal(reset.Combo, 1)
+end)
+test("dash grants bounded invulnerability and a Strider follow-up", function()
+	local p = Profile.new()
+	p.XP = 100
+	p.Path = "strider"
+	local stats = Progression.stats(p, Config)
+	local s = Combat.new()
+	equal(Combat.action(s, "dash", 10, stats, p.Path), true)
+	equal(s.DodgeUntil, 10.4)
+	local _, follow = Combat.action(s, "strike", 10.3, stats, p.Path)
+	assert(follow.Damage > stats.Damage)
+	equal(s.FollowUntil, 0)
+	equal(Combat.action(s, "dash", 10.5, stats, p.Path), false)
+end)
+test("coreburst breaks a solo boss charge and exposes it", function()
+	local def = Config.Enemies.verdant_warden
+	local e = EnemyAI.new(def, 0)
+	equal(EnemyAI.step(e, def, 1, 3), "telegraph")
+	local damage, broke = Combat.damage(e, 30, 1, 1.2, true, def)
+	equal(broke, true)
+	equal(e.State, "exposed")
+	equal(damage, 45)
+	equal(EnemyAI.step(e, def, 2, 3), nil)
+	equal(e.State, "exposed")
+end)
+test("ordinary strike cannot falsely interrupt a charge", function()
+	local def = Config.Enemies.sentry
+	local e = EnemyAI.new(def, 0)
+	EnemyAI.step(e, def, 1, 3)
+	local _, broke = Combat.damage(e, 18, 1, 1.2, false, def)
+	equal(broke, false)
+	equal(e.State, "windup")
+end)
+test("windup impacts once, then respects recovery", function()
+	local def = Config.Enemies.sentry
+	local e = EnemyAI.new(def, 0)
+	equal(EnemyAI.step(e, def, 1, 3), "telegraph")
+	equal(EnemyAI.step(e, def, 1.5, 3), nil)
+	equal(EnemyAI.step(e, def, 2.2, 3), "impact")
+	equal(EnemyAI.step(e, def, 2.3, 3), nil)
+	equal(e.State, "recovery")
+end)
+test("boss phase two changes cadence and alternates attack shape", function()
+	local def = Config.Enemies.verdant_warden
+	local e = EnemyAI.new(def, 0)
+	e.Health = 200
+	EnemyAI.step(e, def, 1, 3)
+	equal(e.Phase, 2)
+	equal(e.Pattern, "slam")
+	assert(e.Until < 1 + def.Windup)
+	EnemyAI.step(e, def, 3, 3)
+	EnemyAI.step(e, def, 6, 3)
+	equal(e.Pattern, "lance")
+end)
+test("distant enemies chase; no target means no new attack", function()
+	local def = Config.Enemies.sentry
+	local e = EnemyAI.new(def, 0)
+	equal(EnemyAI.step(e, def, 1, 20), "move")
+	equal(EnemyAI.step(e, def, 2, nil), nil)
+	equal(e.State, "idle")
+end)
+test("damage cannot overkill and a dead enemy cannot reward twice", function()
+	local def = Config.Enemies.sentry
+	local e = EnemyAI.new(def, 0)
+	equal(Combat.damage(e, 9999, 1, 10, false, def), 80)
+	equal(e.Health, 0)
+	equal(Combat.damage(e, 9999, 1, 11, false, def), 0)
+	local recipients = Combat.recipients(e, 11)
+	equal(#recipients, 1)
+	equal(recipients[1], 1)
+	equal(#Combat.recipients(e, 12), 0)
+end)
+test("recent contributing teammates qualify; stale or trivial tags do not", function()
+	local def = Config.Enemies.verdant_warden
+	local e = EnemyAI.new(def, 0)
+	Combat.damage(e, 30, 1, 0, false, def)
+	Combat.damage(e, 1, 2, 35, false, def)
+	Combat.damage(e, 40, 3, 35, false, def)
+	Combat.damage(e, 999, 4, 35, false, def)
+	local ids = Combat.recipients(e, 36)
+	local found = {}
+	for _, id in ids do
+		found[id] = true
+	end
+	equal(found[1], nil)
+	equal(found[2], nil)
+	equal(found[3], true)
+	equal(found[4], true)
+end)
+test("forge and reward authority require live, close, correct-region players", function()
+	equal(Authority.forge("verdant", 1, true), false)
+	equal(Authority.forge("hub", 20, true), false)
+	equal(Authority.forge("hub", 1, false), false)
+	equal(Authority.forge("hub", 19, true), true)
+	equal(Authority.reward("hub", "verdant", 1, true), false)
+	equal(Authority.reward("verdant", "verdant", 66, true), false)
+	equal(Authority.reward("verdant", "verdant", 10, true), true)
+end)
+test("NaN distance and implausible teleport cannot bypass authority", function()
+	equal(Authority.near(0 / 0, 19), false)
+	equal(Authority.movement(math.huge, 1), false)
+	equal(Authority.movement(100, 0.1), false)
+	equal(Authority.movement(4, 0.1), true)
+end)
+test("per-player rate limits isolate spam", function()
+	local a, b = {}, {}
+	equal(RateLimit.allow(a, "action", 10, 0.4), true)
+	equal(RateLimit.allow(a, "action", 10.1, 0.4), false)
+	equal(RateLimit.allow(b, "action", 10.1, 0.4), true)
 end)
 
--- Execute the actual persistence adapter with a deterministic mocked Roblox store.
--- These tests do not simulate Roblox budgets, shutdown or production network timing.
+test("arrival activates one nearby sentry, not the whole region", function()
+	local active = 0
+	for _, spawn in Config.Spawns do
+		if spawn.Region == "verdant" then
+			local deltaX, deltaZ = spawn.Offset[1], spawn.Offset[3] - 34
+			local d = math.sqrt(deltaX * deltaX + deltaZ * deltaZ)
+			local def = Config.Enemies[spawn.Kind]
+			if EnemyAI.canAcquire(EnemyAI.new(def, 0), def, d, d) then
+				active += 1
+			end
+		end
+	end
+	equal(active, 1)
+end)
+
 local function dataHarness(studio)
 	local storage = {}
 	local fail = false
@@ -282,7 +487,7 @@ local function dataHarness(studio)
 	}
 end
 
-test("live new profile saves and reloads", function()
+test("mock store: new profile saves and reloads", function()
 	local h = dataHarness(false)
 	local d = h.New()
 	equal(d.load(h.Player), true)
@@ -370,7 +575,6 @@ test("save snapshots do not alias live inventory", function()
 	equal(h.Storage.player_42.Data.Owned.sea, nil)
 end)
 
--- Syntax compilation is deliberately distinguished from a Roblox type/API check.
 local function compileDirectory(path)
 	for _, name in fs.readDir(path) do
 		local full = path .. "/" .. name
@@ -384,30 +588,71 @@ local function compileDirectory(path)
 	end
 end
 compileDirectory("src")
-
-test("generated world contains eight supply prompts and three repairs", function()
-	local env = table.clone(roblox)
-	env.workspace = roblox.Instance.new("Workspace")
-	local worldModule =
-		luau.load(fs.readFile("src/server/World.luau"), { environment = env, injectGlobals = true })()
-	local world = worldModule.build(Config)
-	equal(#world.Supplies, 8)
-	equal(#world.Projects, 3)
-	local s = Shift.new(Config, 0)
-	worldModule.render(world, s, Config)
-	equal(world.Projects[1].Prompt.Enabled, true)
-	equal(world.Projects[2].Prompt.Enabled, false)
-	for _, project in Config.Projects do
-		Shift.add(s, 1, project.Required, Config)
+local env = table.clone(roblox)
+local World = luau.load(fs.readFile("src/server/World.luau"), { environment = env, injectGlobals = true })()
+local Appearance =
+	luau.load(fs.readFile("src/server/Appearance.luau"), { environment = env, injectGlobals = true })()
+test("authored world has four distinct regions and valid spawn markers", function()
+	local world = World.build(Config)
+	for _, region in Config.Regions do
+		assert(world:FindFirstChild(region.Id))
+		assert(world[region.Id]:FindFirstChild("Ground"))
 	end
-	worldModule.render(world, s, Config)
-	equal(world.Light.Enabled, true)
-	for _, project in world.Projects do
-		equal(project.Prompt.Enabled, false)
+	for _, spawn in Config.Spawns do
+		assert(world[spawn.Region]:FindFirstChild("Spawn_" .. spawn.Id))
 	end
-	local reading = world.Folder:FindFirstChild("ReadingBench"):FindFirstChild("ChristianReading")
-	assert(reading and reading:IsA("ProximityPrompt"))
+	local count = 0
+	for _, item in world:GetDescendants() do
+		if item:IsA("BasePart") then
+			equal(item.Anchored, true)
+			count += 1
+		end
+	end
+	assert(count > 400 and count < 1200)
+end)
+test("forge and reading prompts are separate and no reading reward marker exists", function()
+	local world = World.build(Config)
+	assert(world.hub.ForgeStation:FindFirstChildOfClass("ProximityPrompt"))
+	local reading = world.hub.ReadingBench:FindFirstChild("ChristianReading")
+	assert(reading)
+	equal(reading.Parent:GetAttribute("Destination"), nil)
+	for _, key in { "Religion", "Reading", "Faith" } do
+		equal(Profile.new()[key], nil)
+	end
+end)
+test("each earned rig form changes visible geometry without collision", function()
+	local previous = 0
+	for form = 0, 3 do
+		local character = roblox.Instance.new("Model")
+		for _, name in { "Right Arm", "Torso" } do
+			local part = roblox.Instance.new("Part")
+			part.Name = name
+			part.Parent = character
+		end
+		local rig = Appearance.rig(character, form, roblox.Color3.fromRGB(80, 220, 200), false)
+		local count = 0
+		for _, part in rig:GetDescendants() do
+			if part:IsA("BasePart") then
+				equal(part.CanCollide, false)
+				count += 1
+			end
+		end
+		assert(count > previous)
+		previous = count
+	end
+end)
+test("R15 hand and upper torso support the same rig", function()
+	local character = roblox.Instance.new("Model")
+	for _, name in { "RightHand", "UpperTorso" } do
+		local part = roblox.Instance.new("Part")
+		part.Name = name
+		part.Parent = character
+	end
+	assert(Appearance.rig(character, 2, roblox.Color3.fromRGB(80, 220, 200), false))
 end)
 print(
-	string.format("\n%d checks passed. Roblox engine, visual playtests and live services NOT tested.", passed)
+	string.format(
+		"\n%d checks passed. Mock/DOM verification only; Roblox engine and real players not tested.",
+		passed
+	)
 )

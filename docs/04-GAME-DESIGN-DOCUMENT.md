@@ -1,25 +1,29 @@
-# Harborlight — Restore Together
+# Riftwake: Ascend — replacement design
 
-Status: first vertical slice specification, with expansion plans separated below. Alternatives: Tidemend Harbor; Lantern Quay. Names are not trademark-cleared.
+Status: action-progression slice in development; supersedes Harborlight. The prior implementation remains in Git history. Research correction and comparison: documents 10 and 11. Working title, no trademark clearance claim.
 
-Cooperative collection/restoration adventure for players seeking calm mastery and shared progress. Initial audience hypothesis: teens and adults who enjoy cozy collection; broader access depends on Roblox’s actual content classification. Fantasy: become part of the crew bringing a storm-worn harbor back to life. Warm timber, deep blue water, sea-glass green and amber lanterns create a recognizable silhouette. Original primitive geometry is a placeholder art direction, not final production art.
+## Identity and core promise
+Become visibly stronger and mechanically more capable by mastering a broken world's dangerous relics. PvE action RPG for players who want satisfying character builds, clear combat and exploration without compulsory PvP or character wipes. Do not claim an approved audience rating; the optional Christian sanctuary still requires full content review.
 
-## Core loop
-Explore a compact quay → recover supply crates with a short hold interaction → carry up to five supplies → contribute at the current repair site → see the shared project restored → earn personal tokens for contribution → select an earned lantern color → begin the next project. After all three projects, celebrate briefly and start a new four-minute shift. All contributors receive the same tokens per unit of work; participation does not require arriving first or winning a vote. A shift timeout resets shared construction, not personal tokens or completed-work counters. Disconnect loses unsaved carried supplies; carried supplies are deliberately ephemeral.
+Fight → recognize a charged attack → break the charge with Coreburst or dash clear → punish its exposed core → claim participation rewards → forge a known upgrade / choose a different build → defeat the regional warden → enter the next region. Cosmetic/status progression supports the character; it no longer substitutes for gameplay growth.
 
-Three projects: mend the pier (8 units), restore the greenhouse (12), relight the beacon (16). World presentation must visibly distinguish unfinished and completed work. Supply crates replenish after eight seconds. Shared depletion can create competition: use sufficient crates, inspect contention in multiplayer and move toward personal pickup availability if necessary. No ships, animal rescue AI, procedural islands, combat or trading in this slice.
+## First slice
+A finished-looking authored hub plus three floating regions: Verdant Reach, Ember Scar and Astral Crown. Three enemy archetypes/wardens use telegraphed attacks, with a phase change on low-health bosses. Four inputs: Strike, Dash, Coreburst and later Overdrive. Compact scope lets encounter timing, readability and feel receive attention.
 
-## Rewards and economy
-One donated supply yields two tokens immediately. Three noncompetitive color choices: amber free, sea-glass 30, violet 60. No random rewards, streaks, currency purchase or scarcity countdown. Earned cosmetics are reusable and permanent. Each repair increments a personal participation milestone for players who contributed. Repeated shifts intentionally test the loop before deeper progression is developed.
+Persistent progression includes XP, levels, shards, boss cores, three upgrade tracks, rig evolution, boss-first-clear milestones and build choice. Deterministic forging; no random downgrade, paid stat reset or paid damage. Three paths: Vanguard favors survivability and wide bursts; Strider favors dash frequency and a follow-up strike; Arcanist favors ability economy and range at lower health. Free changes at the forge preserve experimentation.
 
-## UI and accessibility
-Use native movement/camera and ProximityPrompts for keyboard, touch and gamepad interaction. HUD displays carried amount, token balance, current repair need and time left. A help/settings menu explains controls; a reduced-effects toggle and local audio mute are provided. Do not rely solely on color: signs, text and geometry identify all stations. Shop buttons use touch-sized targets and scrolling. Show state loading and persistence errors explicitly. No menu opens a purchase prompt automatically.
+## Session goals
+First 30 seconds: see the character and destinations; enter Verdant Reach and attack. First minutes: learn the visible charge warning and dash/break response; earn the first ability and upgrade. First full session: break the Verdant Warden, evolve the rig and see the Ember gate open. Later: learn a new boss pattern, compare builds, pursue higher rig forms and optional challenge improvements. These are pacing targets to measure, not observed outcomes.
 
-## Feature decisions against adjacent games
-Compared with opaque collection requirements, exact supply needs stay visible. Compared with theft economies, personal tokens cannot be taken. Compared with long survival runs, a bounded shift allows leaving without a streak penalty. Compared with voting competition, recognition follows contribution. These are design improvements for our target hypothesis, not claims that all competitor players prefer them.
+## Combat and rewards
+Server validates action types, cooldowns, level, Focus, finite aim vectors, distance, region and live character. Client requests intent; never damage, currency, enemy death or rewards. Each enemy incarnation rewards eligible recent contributors once. No last-hit-exclusive loot. Dead characters cannot attack. Region gates are checked on the server even if a player bypasses a portal. Defeat returns the player to the safe hub without deleting earned equipment or progression.
 
-## Expansion only after evidence
-Authored route variants, personal cabin decoration, noncompetitive crew expeditions, accessibility polish, NPC stories and cosmetic packs. Do not combine unrelated pet hatching, rebirth, combat or paid luck systems. Each update must strengthen restoration and shared ownership.
+Corebreak is the identity test: charged attacks have an orange warning and a visible core. A successful burst during that window interrupts and creates a brief exposed state with extra damage. Later bosses alternate area and aimed patterns and change cadence at half health. Walking circles and holding attack must not become the only viable strategy; real combat playtests must verify this.
 
-## MVP acceptance
-A solo player can complete all three projects and replay; multiple players can contribute without duplicate or negative rewards; leaving/rejoining retains tokens and cosmetics when storage is available; unknown or distant interactions grant nothing; Christian reading remains voluntary and unrewarded; the place builds from Git. Runtime and visual acceptance require Studio and remain unverified until recorded.
+## Art and UX
+Deep navy sky, ivory ruined architecture, sea-glass energy and amber forge light. Each region has a different terrain/material silhouette. Islands have visible rock undersides, layered topography, trees/crystals, ruins and authored landmarks. The static world is baked from Luau into the place, visible in Studio edit mode. No flat blank spawn scene. Character evolution changes gauntlet size, shoulder armor and orbiting rig blades.
+
+HUD exposes XP, health, Focus, shard/core balances, next ability and destination. Boss health and phase are readable; fewer oversized text boards in the world. Forge cards show current level, exact effect and next cost. Input is keyboard/mouse, gamepad and touch via native action binding. Sound and effects can be reduced. No forced camera shake, white flashes or random purchase dialogs.
+
+## Boundaries and release gates
+No PvP, trading, paid power, large class catalogue or endless procedural content in the slice. Real Studio combat, multiplayer, movement, device and performance tests are mandatory before calling the game playable/polished. Cloud DOM rendering can reveal geometry/layout problems but does not verify Roblox lighting, UI, physics or combat feel. Qualitative community requests do not prove retention or profitability.
