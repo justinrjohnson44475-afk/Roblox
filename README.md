@@ -6,6 +6,8 @@ A cloud-developed Roblox restoration game written in Luau. Recover supplies, hel
 
 Commercial objective: test whether understandable, cooperative restoration can support repeat play and ethical cosmetic sales. See [market research](docs/01-MARKET-RESEARCH.md), [concept decision](docs/02-MARKET-GAP-AND-OPPORTUNITY.md), [financial assumptions](docs/07-MONETIZATION-AND-FINANCIAL-STRATEGY.md) and [current status](docs/PROJECT-STATUS.md). Revenue is not guaranteed.
 
+[Verified GitHub build and downloadable Studio artifact](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42435421673) — implementation commit `7efbc7b`. This confirms CI builds/tests, not Roblox playtesting.
+
 ## Cloud workflow
 Development runs in Codex Cloud with GitHub as the source of truth. Your personal laptop can be off while research, code, tests, documentation and place builds run. No Local mode is needed for these steps.
 

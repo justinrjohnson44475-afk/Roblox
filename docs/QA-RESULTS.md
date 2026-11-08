@@ -12,7 +12,7 @@ Research/development session: November 7, 2026 client date; cloud commands ran N
 | Rojo XML build | Success | Not opened in Studio |
 | Place deserialization | Both files contain 12 nonempty expected scripts and required services/floor/spawn | Structural only |
 | Publisher dry run | Target/hash/bytes printed; no upload | No API credentials or live integration |
-| GitHub Actions | Workflow prepared; status tracked separately | Local checks do not establish remote CI success |
+| GitHub Actions | [Run 42435421673 passed](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42435421673) for implementation commit 7efbc7b; tool install, tests/build and artifact upload succeeded | Separate remote CI observation; not Roblox runtime testing |
 | Roblox Studio / real devices | NOT RUN | Engine/visual/mobile/controller tests pending |
 | Actual player study | NOT RUN | No feedback or retention data |
 | Live DataStore / Marketplace | NOT RUN | Mock tests only; purchases disabled |
