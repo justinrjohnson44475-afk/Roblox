@@ -3,6 +3,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+if Shared:GetAttribute("AscensionEnabled") then
+	return
+end
 local Config = require(Shared.Config)
 local Progression = require(Shared.Progression)
 local Combat = require(Shared.Combat)

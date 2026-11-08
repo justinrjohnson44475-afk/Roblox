@@ -26,9 +26,9 @@ local function rejects(fn)
 	equal(pcall(fn), false)
 end
 
-test("new hero has schema 2 and no unearned progression", function()
+test("new hero has schema 3 and no unearned progression", function()
 	local p = Profile.new()
-	equal(p.Schema, 2)
+	equal(p.Schema, 3)
 	equal(p.XP, 0)
 	equal(p.Form, 0)
 	equal(p.Cores, 0)
@@ -43,7 +43,7 @@ test("legacy harbor data migrates without deleting cosmetic balances", function(
 		Owned = { sea = true },
 		Equipped = "sea",
 	})
-	equal(p.Schema, 2)
+	equal(p.Schema, 3)
 	equal(p.Tokens, 72)
 	equal(p.Donated, 36)
 	equal(p.Repairs, 3)
@@ -650,6 +650,7 @@ test("R15 hand and upper torso support the same rig", function()
 	end
 	assert(Appearance.rig(character, 2, roblox.Color3.fromRGB(80, 220, 200), false))
 end)
+require("./ascension/run")(test, equal)
 print(
 	string.format(
 		"\n%d checks passed. Mock/DOM verification only; Roblox engine and real players not tested.",

@@ -2,6 +2,10 @@
 
 Updated November 8, 2026. Harborlight is superseded following the owner’s rejection. Its implementation remains in Git history.
 
+## Active overhaul branch
+
+Project Ascension is in progress on `revamp/project-ascension`; main has not been merged. Use [REVAMP/PROJECT-STATUS.md](REVAMP/PROJECT-STATUS.md) and [STUDIO-HANDOFF.md](REVAMP/STUDIO-HANDOFF.md) for the signature build and current limitations. The sections below describe the preserved pre-overhaul baseline. New source assets are exported drafts, all Studio/quality gates remain unverified, and no Roblox publication occurred.
+
 ## Current direction
 Character-centered PvE action RPG: charged-attack breaks, exposed cores, earned abilities, deterministic forging, visible rig evolution and harder regional wardens. Current reasoning and evidence are in documents 10 and 11. The initial listing-based research was insufficient to justify the prior concept; the correction is explicit.
 

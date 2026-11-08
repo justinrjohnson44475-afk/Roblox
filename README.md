@@ -4,6 +4,13 @@ A Roblox PvE action RPG about becoming a visibly different, more capable charact
 
 **Harborlight has been replaced.** The owner's criticism was valid: its chore loop lacked meaningful character growth and its appearance had not been inspected. The old implementation remains in Git history. Read [the research correction](docs/10-GAMEPLAY-AND-COMMUNITY-RESEARCH.md) and [replacement decision](docs/11-REPLACEMENT-CONCEPT-DECISION.md).
 
+## Project Ascension overhaul checkpoint
+
+The overhaul lives on `revamp/project-ascension`, with a separate `ascension.project.json`. [Current status](docs/REVAMP/PROJECT-STATUS.md), [Studio handoff](docs/REVAMP/STUDIO-HANDOFF.md), [quality gates](docs/REVAMP/04-STUDIO-QUALITY-BENCHMARK.md), and [source asset preview](assets/ascension/previews/Source-Models.png) distinguish source drafts from imported/verified work. The preview is a Blender source render, **not a Roblox capture**.
+
+`bash scripts/check.sh` builds both the baseline adapter (`build/Riftwake.rbxl`) and new signature diagnostics (`build/Ascension-Signature.rbxl`), plus XML equivalents. The signature build contains server-timed swept combat, continuous dash, guard/parry, a navigated Warden, party-owned spaces and schema3 foundations. It is intentionally Studio-only and uses labeled neutral collision proxies until the original FBX/animation/audio assets pass import/ownership/engine checks. It does not yet deliver the finished production overhaul. All engine, device and independent player gates remain pending.
+
+
 ## What is implemented
 - Strike combos, a timed defensive dash, Focus-powered Coreburst, and earned Overdrive.
 - Charged enemy attacks, interrupt/exposed-core windows, boss phases and region-specific phase-two attacks.

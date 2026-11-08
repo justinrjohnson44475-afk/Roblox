@@ -1,5 +1,7 @@
 # Riftwake known issues and risk register
 
+Active overhaul defects and incomplete scope are tracked in [REVAMP/14-COMPETITIVE-QUALITY-VALIDATION.md](REVAMP/14-COMPETITIVE-QUALITY-VALIDATION.md). The following table describes the preserved baseline; the new signature runtime remains Studio-only and unverified.
+
 | Priority | Issue | Next verification / mitigation |
 |---|---|---|
 | P0 release | No Roblox Studio engine execution or actual playtest | Open current artifact; full solo/two-client/device QA |
