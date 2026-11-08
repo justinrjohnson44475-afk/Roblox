@@ -36,7 +36,7 @@ Build outputs: `build/Riftwake.rbxl`, `build/Riftwake.rbxlx`, verification logs 
 1. Download the latest **Riftwake** artifact from GitHub Actions or this chat. Older Harborlight files are superseded.
 2. Open `Riftwake.rbxl` or `Riftwake.rbxlx` with **File → Open from File** on a supported Studio host. The complete authored static world is visible in edit mode.
 3. Press **Play**. Enemy constructs, your character rig and UI initialize at runtime.
-4. Enter the green **Verdant Reach** gate. Face the camera toward enemies. Mouse1 strikes; Q dashes; E uses Coreburst at level 2; R uses Overdrive at level 5. Gamepad: R2/B/X/Y. Touch: four combat buttons with native movement/jump controls.
+4. Enter the green **Verdant Reach** gate. Face the camera toward enemies. Mouse1 strikes; Q dashes; E uses Coreburst at level 2; R uses Overdrive at level 5. Gamepad: R2/B/X/Y. Touch: four combat buttons with native movement/jump controls. Use F / controller L1 / the native touch prompt to interact with gates and the forge.
 5. Successful strikes build Focus. Watch orange warnings; dash clear or interrupt a charge with Coreburst, then punish its exposed core. Contributions earn rewards even without the final hit.
 6. Return through the dawn gate. Interact with the forge to upgrade Power/Vitality/Flow, evolve the rig or change build paths. Defeat wardens to open Ember Scar and Astral Crown.
 

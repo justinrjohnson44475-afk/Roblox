@@ -67,6 +67,8 @@ end
 local function prompt(p, action, object)
 	local pr = Instance.new("ProximityPrompt")
 	pr.ActionText = action
+	pr.KeyboardKeyCode = Enum.KeyCode.F
+	pr.GamepadKeyCode = Enum.KeyCode.ButtonL1
 	pr.ObjectText = object
 	pr.MaxActivationDistance = 11
 	pr.HoldDuration = 0.2

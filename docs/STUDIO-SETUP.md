@@ -3,7 +3,7 @@
 ## Open and run
 Download the latest Riftwake binary/XML artifact. Open it through File → Open from File in supported Roblox Studio. Four authored islands, forge, gates and scenery are already present in edit mode. Press Play to initialize constructs, rig, menus and encounter logic. Output must have no errors; record commit, artifact hash and Studio version.
 
-Enter the green Verdant Reach gate. Native movement/jump remains available. Mouse1 / Q / E / R correspond to Strike / Dash / Coreburst / Overdrive. Controller: R2 / B / X / Y. Touch: four action buttons. Coreburst unlocks at level 2 and requires Focus; strikes build it. Use Coreburst during an orange charge to expose a core. Dash clears danger and gives a brief server-controlled defensive window.
+Enter the green Verdant Reach gate. Native movement/jump remains available. Mouse1 / Q / E / R correspond to Strike / Dash / Coreburst / Overdrive. Controller: R2 / B / X / Y. Touch: four action buttons. Interact with gates/forge using F, controller L1 or the native touch prompt; these do not share the Coreburst binding. Coreburst unlocks at level 2 and requires Focus; strikes build it. Use Coreburst during an orange charge to expose a core. Dash clears danger and gives a brief server-controlled defensive window.
 
 Return to Dawn Sanctuary to heal and use the forge. Spend earned shards on known upgrades, evolve the visible rig with warden cores, and choose a build for free at level 3. Ember requires level 3 plus the Verdant Warden clear; Astral requires level 6 plus the Cinder Colossus clear. Later abilities/forms are earned. Verify actual solo pacing rather than assuming the arithmetic test proves an enjoyable route.
 
