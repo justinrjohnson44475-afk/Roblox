@@ -23,5 +23,8 @@ jobs:
             build/*.rbxlx
             build/*.txt
             build/SHA256SUMS
+            build/ascension-readiness.json
+            assets/ascension/previews/*.png
+            assets/ascension/manifest.json
             assets/previews/*.png
           retention-days: 14

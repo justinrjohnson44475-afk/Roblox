@@ -1,0 +1,1063 @@
+<roblox version="4">
+  <Item class="Model" referent="0">
+    <Properties>
+      <string name="Name">R15CollisionProxy</string>
+      <Ref name="PrimaryPart">1</Ref>
+    </Properties>
+    <Item class="Part" referent="2">
+      <Properties>
+        <string name="Name">LeftFoot</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-0.5</X>
+          <Y>0.33000183</Y>
+          <Z>-0.2749939</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.75</X>
+          <Y>0.44999695</Y>
+          <Z>1.1000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="3">
+      <Properties>
+        <string name="Name">LeftLowerArm</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-1.25</X>
+          <Y>2.899994</Y>
+          <Z>-0.009994507</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.6000061</X>
+          <Y>0.69999695</Y>
+          <Z>0.6000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="4">
+        <Properties>
+          <string name="Name">LeftHandJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>-0.3500061</Y>
+            <Z>-0.009994507</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.1499939</Y>
+            <Z>0.05000305</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">3</Ref>
+          <Ref name="Part1">5</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="6">
+      <Properties>
+        <string name="Name">LowerTorso</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0</X>
+          <Y>2.899994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>0.5</Y>
+          <Z>0.8999939</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="7">
+        <Properties>
+          <string name="Name">UpperTorsoJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>0.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>-0.55000305</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">6</Ref>
+          <Ref name="Part1">8</Ref>
+        </Properties>
+      </Item>
+      <Item class="Motor6D" referent="9">
+        <Properties>
+          <string name="Name">LeftUpperLegJoint</string>
+          <CoordinateFrame name="C0">
+            <X>-0.47999573</X>
+            <Y>-0.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0.009994507</X>
+            <Y>0.55000305</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">6</Ref>
+          <Ref name="Part1">10</Ref>
+        </Properties>
+      </Item>
+      <Item class="Motor6D" referent="11">
+        <Properties>
+          <string name="Name">RightUpperLegJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0.47999573</X>
+            <Y>-0.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>-0.009994507</X>
+            <Y>0.55000305</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">6</Ref>
+          <Ref name="Part1">12</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="13">
+      <Properties>
+        <string name="Name">Head</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0</X>
+          <Y>4.925003</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>1.1000061</X>
+          <Y>1.25</Y>
+          <Z>1</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="14">
+      <Properties>
+        <string name="Name">RightUpperArm</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>1.1499939</X>
+          <Y>3.649994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.69999695</X>
+          <Y>0.80000305</Y>
+          <Z>0.69999695</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="15">
+        <Properties>
+          <string name="Name">RightLowerArmJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0.1000061</X>
+            <Y>-0.3999939</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.3500061</Y>
+            <Z>0.009994507</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">14</Ref>
+          <Ref name="Part1">16</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="8">
+      <Properties>
+        <string name="Name">UpperTorso</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0</X>
+          <Y>3.699997</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>1.8999939</X>
+          <Y>1.1000061</Y>
+          <Z>1</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="17">
+        <Properties>
+          <string name="Name">HeadJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>0.6000061</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>-0.625</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">8</Ref>
+          <Ref name="Part1">13</Ref>
+        </Properties>
+      </Item>
+      <Item class="Motor6D" referent="18">
+        <Properties>
+          <string name="Name">RightUpperArmJoint</string>
+          <CoordinateFrame name="C0">
+            <X>1.050003</X>
+            <Y>0.3500061</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>-0.1000061</X>
+            <Y>0.3999939</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">8</Ref>
+          <Ref name="Part1">14</Ref>
+        </Properties>
+      </Item>
+      <Item class="Motor6D" referent="19">
+        <Properties>
+          <string name="Name">LeftUpperArmJoint</string>
+          <CoordinateFrame name="C0">
+            <X>-1.050003</X>
+            <Y>0.3500061</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0.1000061</X>
+            <Y>0.3999939</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">8</Ref>
+          <Ref name="Part1">20</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="1">
+      <Properties>
+        <string name="Name">HumanoidRootPart</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0</X>
+          <Y>2.899994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">false</bool>
+        <Vector3 name="size">
+          <X>2</X>
+          <Y>2</Y>
+          <Z>1</Z>
+        </Vector3>
+        <float name="Transparency">1</float>
+      </Properties>
+      <Item class="Motor6D" referent="21">
+        <Properties>
+          <string name="Name">LowerTorsoJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>-0.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>-0.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">1</Ref>
+          <Ref name="Part1">6</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="10">
+      <Properties>
+        <string name="Name">LeftUpperLeg</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-0.4900055</X>
+          <Y>2.100006</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.80000305</X>
+          <Y>1.1000061</Y>
+          <Z>0.80000305</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="22">
+        <Properties>
+          <string name="Name">LeftLowerLegJoint</string>
+          <CoordinateFrame name="C0">
+            <X>-0.009994507</X>
+            <Y>-0.55000305</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.53500366</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">10</Ref>
+          <Ref name="Part1">23</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="20">
+      <Properties>
+        <string name="Name">LeftUpperArm</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-1.1499939</X>
+          <Y>3.649994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.69999695</X>
+          <Y>0.80000305</Y>
+          <Z>0.69999695</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="24">
+        <Properties>
+          <string name="Name">LeftLowerArmJoint</string>
+          <CoordinateFrame name="C0">
+            <X>-0.1000061</X>
+            <Y>-0.3999939</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.3500061</Y>
+            <Z>0.009994507</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">20</Ref>
+          <Ref name="Part1">3</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="16">
+      <Properties>
+        <string name="Name">RightLowerArm</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>1.25</X>
+          <Y>2.899994</Y>
+          <Z>-0.009994507</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.6000061</X>
+          <Y>0.69999695</Y>
+          <Z>0.6000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="25">
+        <Properties>
+          <string name="Name">RightHandJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>-0.3500061</Y>
+            <Z>-0.009994507</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.1499939</Y>
+            <Z>0.05000305</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">16</Ref>
+          <Ref name="Part1">26</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="5">
+      <Properties>
+        <string name="Name">LeftHand</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-1.25</X>
+          <Y>2.399994</Y>
+          <Z>-0.070007324</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.55000305</X>
+          <Y>0.3500061</Y>
+          <Z>0.6000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="27">
+      <Properties>
+        <string name="Name">RightFoot</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0.5</X>
+          <Y>0.33000183</Y>
+          <Z>-0.2749939</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.75</X>
+          <Y>0.44999695</Y>
+          <Z>1.1000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="26">
+      <Properties>
+        <string name="Name">RightHand</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>1.25</X>
+          <Y>2.399994</Y>
+          <Z>-0.070007324</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.55000305</X>
+          <Y>0.3500061</Y>
+          <Z>0.6000061</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="28">
+      <Properties>
+        <string name="Name">RightLowerLeg</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0.5</X>
+          <Y>1.0149994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.69999695</X>
+          <Y>1.1000061</Y>
+          <Z>0.69999695</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="29">
+        <Properties>
+          <string name="Name">RightFootJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>-0.53500366</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.1499939</Y>
+            <Z>0.2749939</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">28</Ref>
+          <Ref name="Part1">27</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="12">
+      <Properties>
+        <string name="Name">RightUpperLeg</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>0.4900055</X>
+          <Y>2.100006</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.80000305</X>
+          <Y>1.1000061</Y>
+          <Z>0.80000305</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="30">
+        <Properties>
+          <string name="Name">RightLowerLegJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0.009994507</X>
+            <Y>-0.55000305</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.53500366</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">12</Ref>
+          <Ref name="Part1">28</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="23">
+      <Properties>
+        <string name="Name">LeftLowerLeg</string>
+        <bool name="Anchored">false</bool>
+        <CoordinateFrame name="CFrame">
+          <X>-0.5</X>
+          <Y>1.0149994</Y>
+          <Z>0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">5926525</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.69999695</X>
+          <Y>1.1000061</Y>
+          <Z>0.69999695</Z>
+        </Vector3>
+        <float name="Transparency">0.15</float>
+      </Properties>
+      <Item class="Motor6D" referent="31">
+        <Properties>
+          <string name="Name">LeftFootJoint</string>
+          <CoordinateFrame name="C0">
+            <X>0</X>
+            <Y>-0.53500366</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <CoordinateFrame name="C1">
+            <X>0</X>
+            <Y>0.1499939</Y>
+            <Z>0.2749939</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Ref name="Part0">23</Ref>
+          <Ref name="Part1">2</Ref>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Humanoid" referent="32">
+      <Properties>
+        <string name="Name">Humanoid</string>
+        <float name="HipHeight">2</float>
+        <token name="RigType">1</token>
+      </Properties>
+      <Item class="Animator" referent="33">
+        <Properties>
+          <string name="Name">Animator</string>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Part" referent="34">
+      <Properties>
+        <string name="Name">RelicBladeProxy</string>
+        <CoordinateFrame name="CFrame">
+          <X>1.25</X>
+          <Y>2.399994</Y>
+          <Z>-2.1700134</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1</R11>
+          <R12>0</R12>
+          <R20>0</R20>
+          <R21>0</R21>
+          <R22>1</R22>
+        </CoordinateFrame>
+        <bool name="CanCollide">false</bool>
+        <Color3uint8 name="Color3uint8">4646590</Color3uint8>
+        <bool name="Massless">true</bool>
+        <Vector3 name="size">
+          <X>0.30000305</X>
+          <Y>0.30000305</Y>
+          <Z>3.699997</Z>
+        </Vector3>
+      </Properties>
+      <Item class="WeldConstraint" referent="35">
+        <Properties>
+          <string name="Name">WeldConstraint</string>
+          <Ref name="Part0Internal">26</Ref>
+          <Ref name="Part1Internal">34</Ref>
+        </Properties>
+      </Item>
+      <Item class="Attachment" referent="36">
+        <Properties>
+          <string name="Name">BladeBase</string>
+          <Vector3 name="Position">
+            <X>0</X>
+            <Y>0</Y>
+            <Z>1.8500061</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Attachment" referent="37">
+        <Properties>
+          <string name="Name">BladeTip</string>
+          <Vector3 name="Position">
+            <X>0</X>
+            <Y>0</Y>
+            <Z>-1.8500061</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

@@ -1,0 +1,9 @@
+# Asset license and import registry
+
+Machine-readable source: [`assets/ascension/manifest.json`](../../assets/ascension/manifest.json).47 records cover3 original FBX models,30 named clips and14 original WAV sketches. Each records source path, kind, rights, commercial use, attribution, SHA256, intended owner, Roblox ID, lifecycle status and engine-evidence field. All currently exported; Roblox IDs0, owner UNASSIGNED_ROBLOX_CREATOR, engine evidence empty. No purchased assets or outside meshes/textures/animation/audio samples were introduced.
+
+Original generator scripts and `.blend` source are committed. Source contributors retain the project's normal repository rights; LicenseVerified means provenance was inspected as original generation, not that Roblox import, ownership or final legal review occurred. Official R15 documentation informs compatibility; reference downloads were not copied into these assets.
+
+Lifecycle: authored → exported → imported → engine-validated. Do not advance status on build success. Import records must name the Roblox creator/group, source hash, actual import/animation/sound ID and dated evidence. If source changes, regenerate the manifest to invalidate stale IDs/status. A source file shared by all clips currently invalidates all of them when changed; this conservative policy avoids mismatched choreography.
+
+Official guidance retrieved November8: [supported model reference project files](https://create.roblox.com/docs/art/modeling/project-files), [animation import workflow](https://create.roblox.com/docs/avatar/emotes/import), [Animator replication](https://create.roblox.com/docs/reference/engine/classes/Animator), [WorldRoot casts](https://create.roblox.com/docs/reference/engine/classes/WorldRoot). Follow supported import settings, inspect axes/scale/skin weights and publish animations under the experience's permitted owner. Missing assets block readiness visibly; Studio source proxies cannot clear production gates.

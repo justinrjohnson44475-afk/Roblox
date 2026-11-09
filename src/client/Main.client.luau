@@ -9,6 +9,9 @@ local GuiService = game:GetService("GuiService")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+if Shared:GetAttribute("AscensionEnabled") then
+	return
+end
 local Config = require(Shared.Config)
 local Progression = require(Shared.Progression)
 local UI = require(script.Parent.UI)
