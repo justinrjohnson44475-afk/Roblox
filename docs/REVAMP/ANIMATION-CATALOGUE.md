@@ -1,6 +1,6 @@
-# Animation catalogue — movement v2
+# Animation catalogue — combat v3
 
-33 original R15 source clips, exported only. No owned import IDs or agent-observed engine validation. Source uses 60Hz continuous curves; active combat boundaries remain authoritative server timings.
+38 original source clips, exported only. No verified owned Roblox IDs.
 
 | Clip | Seconds | Loop | Markers |
 |---|---:|---|---|
@@ -13,17 +13,18 @@
 | StrafeRight | 0.750 | True | FootLeft 0.000, FootRight 0.375 |
 | Jump | 0.450 | False | Takeoff 0.000 |
 | Fall | 0.800 | True |  |
-| Land | 0.350 | False | GroundImpact 0.000 |
-| HeavyLand | 0.600 | False | GroundImpact 0.000 |
-| Light1 | 0.420 | False | TrailOn 0.100, HitStart 0.100, HitEnd 0.220, TrailOff 0.220, Recovery 0.220 |
-| Light2 | 0.460 | False | TrailOn 0.120, HitStart 0.120, HitEnd 0.240, TrailOff 0.240, Recovery 0.240 |
-| Light3 | 0.610 | False | TrailOn 0.170, HitStart 0.170, HitEnd 0.320, TrailOff 0.320, Recovery 0.320 |
-| Heavy | 0.900 | False | TrailOn 0.350, HitStart 0.350, GroundImpact 0.400, HitEnd 0.470, TrailOff 0.470, Recovery 0.470 |
+| Land | 0.240 | False | GroundImpact 0.000 |
+| HeavyLand | 0.380 | False | GroundImpact 0.000 |
+| Light1 | 0.280 | False | TrailOn 0.060, HitStart 0.060, HitEnd 0.150, TrailOff 0.150, Recovery 0.150 |
+| Light2 | 0.310 | False | TrailOn 0.070, HitStart 0.070, HitEnd 0.170, TrailOff 0.170, Recovery 0.170 |
+| Light3 | 0.420 | False | TrailOn 0.100, HitStart 0.100, HitEnd 0.220, TrailOff 0.220, Recovery 0.220 |
+| HeavyCharge | 0.700 | False | Charge 0.000 |
+| Heavy | 0.910 | False | TrailOn 0.350, HitStart 0.350, GroundImpact 0.430, HitEnd 0.510, TrailOff 0.510, Recovery 0.510 |
 | DashForward | 0.280 | False | DashStart 0.000, DashEnd 0.180 |
 | DashBack | 0.280 | False | DashStart 0.000, DashEnd 0.180 |
 | DashLeft | 0.280 | False | DashStart 0.000, DashEnd 0.180 |
 | DashRight | 0.280 | False | DashStart 0.000, DashEnd 0.180 |
-| DoubleJump | 0.480 | False | AirStep 0.000, Unfold 0.360 |
+| DoubleJump | 0.360 | False | AirStep 0.000, Unfold 0.220 |
 | WallRunLeft | 0.280 | True | WallFootLeft 0.070, WallFootRight 0.210 |
 | WallRunRight | 0.280 | True | WallFootLeft 0.070, WallFootRight 0.210 |
 | Guard | 1.000 | True |  |
@@ -32,10 +33,14 @@
 | Hurt | 0.350 | False |  |
 | Coreburst | 0.480 | False | Charge 0.000, HitStart 0.120, GroundImpact 0.120, HitEnd 0.180, Recovery 0.180 |
 | Overdrive | 1.000 | False | Charge 0.000, HitStart 0.250, GroundImpact 0.250, HitEnd 0.400, Recovery 0.400 |
-| WardenIdle | 2.000 | True |  |
-| WardenWalk | 1.200 | True | FootLeft 0.000, FootRight 0.600 |
-| WardenSlam | 2.200 | False | Charge 0.000, HitStart 1.150, GroundImpact 1.350, Recovery 1.400 |
-| WardenLance | 1.900 | False | Charge 0.000, HitStart 1.150, GroundImpact 1.350, Recovery 1.400 |
-| WardenExposed | 2.400 | True |  |
+| WardenIdle | 2.400 | True |  |
+| WardenWalk | 0.850 | True | FootLeft 0.212, FootRight 0.637 |
+| WardenRoar | 1.100 | False | Roar 0.300 |
+| WardenSwipe | 1.930 | False | Charge 0.000, HitStart 0.750, GroundImpact 0.820, Recovery 0.930 |
+| WardenLance | 2.130 | False | Charge 0.000, HitStart 0.950, GroundImpact 1.020, Recovery 1.130 |
+| WardenSlam | 2.680 | False | Charge 0.000, HitStart 1.500, GroundImpact 1.570, Recovery 1.680 |
+| WardenExposed | 1.200 | True |  |
+| WardenFlinch | 0.240 | False |  |
+| WardenDefeat | 1.000 | False |  |
 
-Run/Sprint use trailing-arm ninja poses. DoubleJump is an original tucked air flip. WallRunLeft/Right support five bounded steps at.14s intervals. All33 source Blender actions remain editable after reopening. Pose renders are source previews, not Roblox captures or proof of smooth engine playback. See16-MOVEMENT-V2.md.
+Landing and air recovery finish upright. HeavyCharge holds at its authored windup; Heavy releases from.35s. Warden contact uses the GroundImpact marker, with partial leg-free Flinch overlay. See17-COMBAT-V3.md for controls and verification limits.

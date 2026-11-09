@@ -11,6 +11,10 @@ The overhaul lives on `revamp/project-ascension`, with a separate `ascension.pro
 `bash scripts/check.sh` builds both the baseline adapter (`build/Riftwake.rbxl`) and new signature diagnostics (`build/Ascension-Signature.rbxl`), plus XML equivalents. The signature build contains server-timed swept combat, continuous dash, guard/parry, a navigated Warden, party-owned spaces and schema3 foundations. It is intentionally Studio-only and uses labeled neutral collision proxies until the original FBX/animation/audio assets pass import/ownership/engine checks. It does not yet deliver the finished production overhaul. All engine, device and independent player gates remain pending.
 
 
+## Current test build: Combat v3
+
+Open `build/Riftwake-Combat-v3.rbxl` after `bash scripts/check.sh`. Default run60; Mouse1 immediate light; hold/release T or RMB for Heavy; E Coreburst shockwave; R eight-second Overdrive. The TEST E/R button is available only for unsaved Studio ability inspection. Landing and Warden source animations were revised; small biome samples were removed. [Changes and test checklist](docs/REVAMP/17-COMBAT-V3.md). Cloud builds/pose checks do not establish engine animation quality.
+
 ## Movement v2 test
 
 Open `build/Riftwake-Movement-v2.rbxl` after `bash scripts/check.sh`. Run/sprint uses revised ninja-inspired poses; Q is a shorter phase dash; press jump again in the air for one extra jump; hold sprint while airborne alongside a vertical wall for up to five steps. A practice lane and hanging-vine/sand/urban material studies sit at the arena edges. [Changes and Studio checklist](docs/REVAMP/16-MOVEMENT-V2.md). This is a new cloud-built test revision, not an agent-verified Studio playtest.

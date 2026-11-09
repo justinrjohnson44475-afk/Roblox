@@ -60,6 +60,7 @@ local message = text(
 	UDim2.new(0.62, 0, 0, 45),
 	UDim2.new(0.19, 0, 1, -119)
 )
+local localNoticeUntil = 0
 local session, seq, state = nil, 0, nil
 local heldAt = 0
 local isHeld = false
@@ -88,7 +89,16 @@ local function send(action, extra)
 	remotes.Request:FireServer(packet)
 	return seq
 end
-local motion = require(script.Parent.MotionController).new(player, animations, presentation, send)
+local motion = require(script.Parent.MotionController).new(
+	player,
+	animations,
+	presentation,
+	send,
+	function(value)
+		message.Text = value
+		localNoticeUntil = os.clock() + 2.5
+	end
+)
 local function predict(action)
 	if action == "dash" then
 		motion:dash()
@@ -172,19 +182,34 @@ reading.Visible = false
 button("OPTIONAL READING", 166, 230, function()
 	reading.Visible = not reading.Visible
 end)
+button("TEST E/R · REFILL", 166, 266, function()
+	send("previewAbilities")
+end)
+local abilityHelp = text(
+	"AbilityHelp",
+	"Mouse1: quick light · hold T/RMB: charge Heavy\nE: Coreburst shockwave · R: 8s Overdrive",
+	UDim2.new(0.48, 0, 0, 80),
+	UDim2.new(0.50, 0, 1, -213)
+)
+abilityHelp.TextSize = 14
 local function action(name, inputState)
 	local begin = inputState == Enum.UserInputState.Begin
 	local finish = inputState == Enum.UserInputState.End or inputState == Enum.UserInputState.Cancel
 	if name == "AscensionStrike" then
 		if begin then
-			heldAt = os.clock()
-			isHeld = true
+			predict("light")
 		end
-		if finish and isHeld then
-			isHeld = false
-			predict(if os.clock() - heldAt >= 0.25 then "heavy" else "light")
+	elseif name == "AscensionHeavy" then
+		if begin then
+			motion:charge(true)
+		elseif finish then
+			motion:charge(false)
 		end
 	elseif name == "AscensionGuard" then
+		if begin and motion.ChargeStarted then
+			motion:notify("Release Heavy before guarding")
+			return Enum.ContextActionResult.Sink
+		end
 		if begin then
 			send("guard", { enabled = true })
 			if player.Character then
@@ -212,7 +237,14 @@ local function action(name, inputState)
 	return Enum.ContextActionResult.Sink
 end
 Input:BindAction("AscensionStrike", action, true, Enum.UserInputType.MouseButton1, Enum.KeyCode.ButtonR2)
-Input:BindAction("AscensionHeavy", action, true, Enum.KeyCode.T, Enum.KeyCode.ButtonR1)
+Input:BindAction(
+	"AscensionHeavy",
+	action,
+	true,
+	Enum.KeyCode.T,
+	Enum.KeyCode.ButtonR1,
+	Enum.UserInputType.MouseButton2
+)
 Input:BindAction("AscensionGuard", action, true, Enum.KeyCode.F, Enum.KeyCode.ButtonL2)
 Input:BindAction("AscensionSprint", action, true, Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonL3)
 Input:BindAction("AscensionDash", action, true, Enum.KeyCode.Q, Enum.KeyCode.ButtonB)
@@ -249,6 +281,8 @@ task.spawn(function()
 		end)
 	end
 end)
+Input:SetTitle("AscensionSprint", "Wall Run")
+Input:SetTitle("AscensionHeavy", "Hold Heavy")
 local function character(model)
 	presentation:clear()
 	audio:clear()
@@ -301,6 +335,27 @@ if player.Character then
 end
 remotes.State.OnClientEvent:Connect(function(value)
 	state = value
+	motion.State = value
+	local level = value.abilityLevel or value.profile.Level
+	local function status(key, needed, cost)
+		if level < needed then
+			return "Locked · Lv." .. needed
+		end
+		local cooldown = value.cooldowns and value.cooldowns[key] or 0
+		if cooldown > 0.1 then
+			return string.format("Cooldown %.1fs", cooldown)
+		end
+		return if value.focus >= cost then "Ready" else "Need " .. cost .. " Focus"
+	end
+	abilityHelp.Text = "Mouse1: Light · hold/release T or RMB: Heavy\nE: Coreburst shockwave · "
+		.. status("burst", 2, value.burstCost or 60)
+		.. "\nR: Overdrive · "
+		.. (
+			if (value.overdrive or 0) > 0
+				then string.format("ACTIVE %.1fs", value.overdrive)
+				else status("overdrive", 5, 100)
+		)
+
 	audio:music(if value.encounter then "boss" else "exploration")
 	if session ~= value.session then
 		session = value.session
@@ -339,7 +394,7 @@ remotes.State.OnClientEvent:Connect(function(value)
 			.. "\nAll members must Ready before the leader enters"
 		elseif value.invite then "Invitation from " .. value.invite .. " · Accept within 30 seconds"
 		else "Solo · create a party, then invite a player below"
-	if value.notice then
+	if value.notice and os.clock() >= localNoticeUntil then
 		message.Text = value.notice
 	end
 end)

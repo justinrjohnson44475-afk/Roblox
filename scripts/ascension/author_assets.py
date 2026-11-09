@@ -136,7 +136,7 @@ for obj in warden:
 # Poses are authored in world-aligned joint axes, then projected into each bone rest basis.
 def pose(**joints):return joints
 idle={'LowerTorso':(0,0,0),'UpperTorso':(.04,0,0),'Head':(-.02,0,0),'RightUpperArm':(.2,.05,-.12),'LeftUpperArm':(.15,-.05,.12)}
-ready={**idle,'UpperTorso':(.14,0,-.18),'RightUpperArm':(.65,-.1,-.25),'RightLowerArm':(.5,0,0),'LeftUpperArm':(.6,0,.3),'LeftLowerArm':(.7,0,0),'RightUpperLeg':(.12,0,0),'LeftUpperLeg':(-.12,0,0)}
+ready={**idle,'UpperTorso':(-.10,0,-.18),'Head':(.08,0,0),'RightUpperArm':(.65,-.1,-.25),'RightLowerArm':(.5,0,0),'LeftUpperArm':(.6,0,.3),'LeftLowerArm':(.7,0,0),'RightUpperLeg':(.12,0,0),'LeftUpperLeg':(-.12,0,0)}
 def strike(kind):
  direction= -1 if kind==2 else 1
  wind={**ready,'LowerTorso':(0,0,-.3*direction),'UpperTorso':(.05,0,-.45*direction),'RightUpperArm':(1.15,.15,-.75*direction),'RightLowerArm':(.35,0,.2)}
@@ -174,9 +174,14 @@ for name,dir in [('StrafeLeft',-1),('StrafeRight',1)]:
  clip(name,.75,[(0,{**ready,'LeftUpperLeg':(0,0,.15*dir),'RightUpperLeg':(0,0,-.15*dir)}),(.375,{**ready,'LeftUpperLeg':(0,0,-.2*dir),'RightUpperLeg':(0,0,.2*dir)}),(.75,ready)],{'FootLeft':0,'FootRight':.375},True,'Movement')
 clip('Jump',.45,[(0,ready),(.12,{**ready,'LeftUpperLeg':(.8,0,0),'RightUpperLeg':(-.35,0,0),'LeftLowerLeg':(.8,0,0)}),(.45,ready)],{'Takeoff':0},False,'Movement')
 clip('Fall',.8,[(0,{**ready,'LeftUpperArm':(.3,0,.6),'RightUpperArm':(.3,0,-.6)}),(.8,ready)],loop=True,priority='Movement')
-for name,dur,bend in [('Land',.35,.35),('HeavyLand',.6,.7)]:
- clip(name,dur,[(0,{**ready,'UpperTorso':(bend,0,0),'LeftUpperLeg':(-bend,0,0),'RightUpperLeg':(-bend,0,0),'LeftLowerLeg':(bend*1.5,0,0),'RightLowerLeg':(bend*1.5,0,0)}),(dur,ready)],{'GroundImpact':0})
-for i,timing in enumerate([(.1,.12,.2),(.12,.12,.22),(.17,.15,.29)],1):
+# Knees flex backward on the sagittal axis; finish upright, never in the combat crouch.
+for name,dur,bend in [('Land',.24,.22),('HeavyLand',.38,.40)]:
+ absorb={**idle,'LowerTorso':(0,0,0),'UpperTorso':(-.08,0,0),'Head':(.08,0,0),
+  'LeftUpperLeg':(bend,0,0),'RightUpperLeg':(bend,0,0),
+  'LeftLowerLeg':(-bend*1.7,0,0),'RightLowerLeg':(-bend*1.7,0,0),
+  'LeftFoot':(bend*.7,0,0),'RightFoot':(bend*.7,0,0)}
+ clip(name,dur,[(0,absorb),(dur*.45,{**absorb,'UpperTorso':(-.04,0,0)}),(dur,idle)],{'GroundImpact':0})
+for i,timing in enumerate([(.06,.09,.13),(.07,.10,.14),(.10,.12,.20)],1):
  w,a,r=timing;wind,contact,follow=strike(i)
  # Start coil in the hips; the shoulder/blade catches up, then follows through.
  hip_lead={**ready,'LowerTorso':(0,0,wind['LowerTorso'][2] if 'LowerTorso' in wind else -.25),
@@ -187,13 +192,16 @@ for i,timing in enumerate([(.1,.12,.2),(.12,.12,.22),(.17,.15,.29)],1):
  clip('Light'+str(i),w+a+r,[(0,ready),(w*.35,hip_lead),(w,wind),(w+a*.45,contact),(w+a,follow),(w+a+r*.55,settle),(w+a+r,ready)],{'TrailOn':w,'HitStart':w,'HitEnd':w+a,'TrailOff':w+a,'Recovery':w+a})
 heavy_w={**ready,'UpperTorso':(.18,0,-.25),'RightUpperArm':(2.65,0,-.1),'RightLowerArm':(-.3,0,0),'LeftUpperArm':(1.9,0,.2)}
 heavy_c={**ready,'UpperTorso':(-.48,0,.2),'RightUpperArm':(.85,0,.1),'RightLowerArm':(.15,0,0),'LeftUpperLeg':(.3,0,0),'LeftLowerLeg':(-.65,0,0)}
-clip('Heavy',.9,[(0,ready),(.22,heavy_w),(.35,heavy_w),(.42,heavy_c),(.52,{**heavy_c,'UpperTorso':(-.35,0,.35)}),(.72,{**ready,'UpperTorso':(-.08,0,.12)}),(.9,ready)],{'TrailOn':.35,'HitStart':.35,'GroundImpact':.4,'HitEnd':.47,'TrailOff':.47,'Recovery':.47})
+clip('HeavyCharge',.7,[(0,ready),(.35,heavy_w),(.7,heavy_w)],{'Charge':0})
+clip('Heavy',.91,[(0,ready),(.24,heavy_w),(.35,heavy_w),(.43,heavy_c),(.51,{**heavy_c,'UpperTorso':(-.28,0,.35)}),(.73,{**ready,'UpperTorso':(-.08,0,.12)}),(.91,ready)],{'TrailOn':.35,'HitStart':.35,'GroundImpact':.43,'HitEnd':.51,'TrailOff':.51,'Recovery':.51})
 for name in ['DashForward','DashBack','DashLeft','DashRight']:
  tilt={'DashForward':(-.65,0,0),'DashBack':(.22,0,0),'DashLeft':(-.3,-.2,0),'DashRight':(-.3,.2,0)}[name]
  tuck={**ready,'UpperTorso':tilt,'Head':(.35,0,0),'LeftUpperLeg':(.9,0,0),'RightUpperLeg':(-.55,0,0),'LeftLowerLeg':(-1.3,0,0),'RightLowerLeg':(-.45,0,0),'LeftUpperArm':(-.45,0,.18),'RightUpperArm':(-.5,0,-.18),'RightHand':(0,0,math.pi)}
  clip(name,.28,[(0,tuck),(.07,{**tuck,'LeftUpperLeg':(.65,0,0)}),(.18,{**tuck,'UpperTorso':tuple(v*.6 for v in tilt)}),(.28,ready)],{'DashStart':0,'DashEnd':.18})
 # Tucked air flip and five-step lateral wall-run; physics stays server-controlled.
-clip('DoubleJump',.48,[(0,{**ready,'LowerTorso':(0,0,0)}),(.1,{**ready,'LowerTorso':(-1.2,0,0),'LeftUpperLeg':(1.25,0,0),'RightUpperLeg':(1.1,0,0),'LeftLowerLeg':(-1.6,0,0),'RightLowerLeg':(-1.6,0,0)}),(.3,{**ready,'LowerTorso':(-4.8,0,0),'LeftUpperLeg':(1.1,0,0),'RightUpperLeg':(.8,0,0),'LeftLowerLeg':(-1.5,0,0),'RightLowerLeg':(-1.5,0,0)}),(.48,{**ready,'LowerTorso':(-math.tau,0,0)})],{'AirStep':0,'Unfold':.36})
+# A compact tuck replaces the full waist flip; every joint returns to upright idle.
+tuck={**idle,'UpperTorso':(-.08,0,0),'Head':(.08,0,0),'LeftUpperLeg':(.65,0,0),'RightUpperLeg':(.60,0,0),'LeftLowerLeg':(-.85,0,0),'RightLowerLeg':(-.80,0,0),'LeftUpperArm':(.3,0,.2),'RightUpperArm':(.3,0,-.2)}
+clip('DoubleJump',.36,[(0,idle),(.10,tuck),(.22,tuck),(.36,idle)],{'AirStep':0,'Unfold':.22})
 for name,side in [('WallRunLeft',1),('WallRunRight',-1)]:
  keys=[]
  for i in range(17):
@@ -210,16 +218,33 @@ clip('Parry',.4,[(0,ready),(.08,{**ready,'LeftUpperArm':(1.6,0,-.5),'LeftLowerAr
 clip('GuardBreak',.7,[(0,ready),(.12,{**idle,'UpperTorso':(-.4,0,0),'LeftUpperArm':(.2,0,1),'RightUpperArm':(.2,0,-1)}),(.7,ready)])
 clip('Hurt',.35,[(0,ready),(.08,{**ready,'UpperTorso':(-.2,0,-.2),'Head':(.15,0,0)}),(.35,ready)])
 for name,w,a,r in [('Coreburst',.12,.06,.3),('Overdrive',.25,.15,.6)]:
- wind={**ready,'LeftUpperArm':(.7,0,-.7),'LeftLowerArm':(1,0,0),'UpperTorso':(.1,0,-.3)}
+ wind={**ready,'LeftUpperArm':(.7,0,-.7),'LeftLowerArm':(-1,0,0),'UpperTorso':(-.10,0,-.3)}
  hit={**ready,'LeftUpperArm':(1.6,0,-.05),'LeftLowerArm':(.05,0,0),'UpperTorso':(.25,0,.3)}
+ if name=='Overdrive':
+  wind={**ready,'UpperTorso':(-.06,0,0),'LeftUpperArm':(1.1,0,.15),'RightUpperArm':(1.1,0,-.15),'LeftLowerArm':(-1,0,0),'RightLowerArm':(-1,0,0)}
+  hit={**ready,'UpperTorso':(-.04,0,0),'Head':(.04,0,0),'LeftUpperArm':(.45,0,.85),'RightUpperArm':(.45,0,-.85),'LeftLowerArm':(-.10,0,0),'RightLowerArm':(-.10,0,0)}
  clip(name,w+a+r,[(0,ready),(w*.8,wind),(w,wind),(w+a,hit),(w+a+r,ready)],{'Charge':0,'HitStart':w,'GroundImpact':w,'HitEnd':w+a,'Recovery':w+a})
-for name,dur in [('WardenIdle',2),('WardenWalk',1.2),('WardenSlam',2.2),('WardenLance',1.9),('WardenExposed',2.4)]:
- if name=='WardenIdle':keys=[(0,idle),(1,{**idle,'UpperTorso':(.12,0,0)}),(2,idle)];markers={}
- elif name=='WardenWalk':keys=[(0,{**idle,'LeftUpperLeg':(.35,0,0),'RightUpperLeg':(-.35,0,0)}),(.6,{**idle,'LeftUpperLeg':(-.35,0,0),'RightUpperLeg':(.35,0,0)}),(1.2,idle)];markers={'FootLeft':0,'FootRight':.6}
- elif name=='WardenExposed':keys=[(0,{**idle,'UpperTorso':(.65,0,0),'Head':(.25,0,0)}),(dur,{**idle,'UpperTorso':(.6,0,0)})];markers={}
- else:
-  keys=[(0,ready),(.85,heavy_w),(1.15,heavy_w),(1.35,heavy_c),(dur,ready)];markers={'Charge':0,'HitStart':1.15,'GroundImpact':1.35,'Recovery':1.4}
- clip(name,dur,keys,markers,name in ['WardenIdle','WardenWalk','WardenExposed'])
+# The stone sentinel has its own balanced gait, attacks and readable reactions.
+w_idle={**idle,'UpperTorso':(-.04,0,0),'Head':(.04,0,0),'LeftUpperArm':(.12,0,.1),'RightUpperArm':(.12,0,-.1)}
+clip('WardenIdle',2.4,[(0,w_idle),(1.2,{**w_idle,'UpperTorso':(-.065,0,.015),'Head':(.055,0,-.01)}),(2.4,w_idle)],loop=True,priority='Idle')
+walk=[]
+for i in range(17):
+ phase=i/16*math.tau;v=math.sin(phase)*.48
+ walk.append((i/16*.85,{**w_idle,'LowerTorso':(0,math.sin(phase)*.045,0),'UpperTorso':(-.08,0,-math.sin(phase)*.04),
+  'LeftUpperLeg':(v,0,0),'RightUpperLeg':(-v,0,0),'LeftLowerLeg':(-max(0,v)*1.3,0,0),'RightLowerLeg':(-max(0,-v)*1.3,0,0),
+  'LeftUpperArm':(-v*.5,0,.1),'RightUpperArm':(v*.5,0,-.1),'Head':(.07,0,math.sin(phase)*.025)}))
+clip('WardenWalk',.85,walk,{'FootLeft':.2125,'FootRight':.6375},True,'Movement')
+roar={**w_idle,'UpperTorso':(.08,0,0),'Head':(-.12,0,0),'LeftUpperArm':(.5,.3,.6),'RightUpperArm':(.5,-.3,-.6)}
+clip('WardenRoar',1.1,[(0,w_idle),(.3,roar),(.65,{**roar,'UpperTorso':(.04,0,0)}),(1.1,w_idle)],{'Roar':.3})
+for name,w,wind,hit in [
+ ('WardenSwipe',.75,{**w_idle,'LowerTorso':(0,0,-.2),'UpperTorso':(-.08,0,-.35),'RightUpperArm':(1.1,0,-.65)}, {**w_idle,'LowerTorso':(0,0,.2),'UpperTorso':(-.18,0,.4),'RightUpperArm':(1.2,0,.65),'RightLowerArm':(-.2,0,0)}),
+ ('WardenLance',.95,{**w_idle,'UpperTorso':(0,0,-.3),'LeftUpperArm':(.6,0,-.3),'LeftLowerArm':(-.9,0,0)}, {**w_idle,'UpperTorso':(-.2,0,.15),'LeftUpperArm':(1.5,0,.05),'LeftLowerArm':(-.1,0,0)}),
+ ('WardenSlam',1.5,{**w_idle,'UpperTorso':(.12,0,0),'LeftUpperArm':(2.6,0,.15),'RightUpperArm':(2.6,0,-.15)}, {**w_idle,'UpperTorso':(-.25,0,0),'LeftUpperLeg':(.25,0,0),'RightUpperLeg':(.25,0,0),'LeftLowerLeg':(-.45,0,0),'RightLowerLeg':(-.45,0,0),'LeftUpperArm':(.7,0,.2),'RightUpperArm':(.7,0,-.2)})]:
+ clip(name,w+.18+1,[(0,w_idle),(w*.7,wind),(w,wind),(w+.07,hit),(w+.18,hit),(w+.65,{**w_idle,'UpperTorso':(-.1,0,0)}),(w+1.18,w_idle)],{'Charge':0,'HitStart':w,'GroundImpact':w+.07,'Recovery':w+.18})
+exposed={**w_idle,'UpperTorso':(-.15,0,0),'Head':(.15,0,0),'LeftUpperArm':(-.25,0,.3),'RightUpperArm':(-.25,0,-.3),'LeftUpperLeg':(.2,0,0),'RightUpperLeg':(.2,0,0),'LeftLowerLeg':(-.35,0,0),'RightLowerLeg':(-.35,0,0)}
+clip('WardenExposed',1.2,[(0,exposed),(.6,{**exposed,'UpperTorso':(-.12,0,0)}),(1.2,exposed)],loop=True)
+clip('WardenFlinch',.24,[(0,w_idle),(.07,{**w_idle,'UpperTorso':(.06,0,-.12),'Head':(-.04,0,.05)}),(.24,w_idle)])
+clip('WardenDefeat',1.0,[(0,w_idle),(.3,exposed),(.7,{**exposed,'UpperTorso':(-.35,0,0),'Head':(.25,0,0),'LeftLowerLeg':(-.7,0,0),'RightLowerLeg':(-.7,0,0)}),(1.0,{**exposed,'UpperTorso':(-.30,0,0),'Head':(.25,0,0)})])
 # Linear baked keys sample continuous authored Hermite motion at 60 Hz.
 def interpolate(keys,t,loop=False):
  for i in range(len(keys)-1):

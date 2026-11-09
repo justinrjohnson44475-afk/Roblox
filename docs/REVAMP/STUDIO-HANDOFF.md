@@ -15,3 +15,5 @@ Cloud source/build work needs no Local-mode switch and no running owner laptop. 
 No solo, four-client, visual, audio, device, persistence-service or publishing verification has been performed yet.
 
 Movement v2 download: `build/Riftwake-Movement-v2.rbxl`. See16-MOVEMENT-V2.md for controls, source changes and exact regression checks.
+
+Current revision: open `build/Riftwake-Combat-v3.rbxl`; use17-COMBAT-V3.md for changed controls, ability preview, speed and exact regression checks. Current registry:55 exported records/38 source clips, without verified owned IDs.

@@ -12,7 +12,7 @@ python3 -m unittest discover -s tests -p 'test_*.py' -v
 python3 scripts/ascension/verify.py
 .tools/rojo build ascension.project.json -o build/Ascension-Signature.rbxl
 .tools/rojo build ascension.project.json -o build/Ascension-Signature.rbxlx
-cp build/Ascension-Signature.rbxl build/Riftwake-Movement-v2.rbxl
+cp build/Ascension-Signature.rbxl build/Riftwake-Combat-v3.rbxl
 .tools/lune run scripts/ascension/inspect.luau | tee build/ascension-inspection.txt
 python3 scripts/publish.py --place-id 1 --file build/Riftwake.rbxl
-sha256sum build/Riftwake.rbxl build/Riftwake.rbxlx build/Ascension-Signature.rbxl build/Ascension-Signature.rbxlx build/Riftwake-Movement-v2.rbxl | tee build/SHA256SUMS
+sha256sum build/Riftwake.rbxl build/Riftwake.rbxlx build/Ascension-Signature.rbxl build/Ascension-Signature.rbxlx build/Riftwake-Combat-v3.rbxl | tee build/SHA256SUMS

@@ -146,6 +146,15 @@ local function state(player)
 		notice = notices[player],
 		stamina = s and s.Stamina or 0,
 		focus = s and s.Focus or 0,
+		abilityLevel = if s and s.PreviewAbilities
+			then math.max(5, Progression.level(profile.XP))
+			else Progression.level(profile.XP),
+		overdrive = if s then math.max(0, s.OverdriveUntil - os.clock()) else 0,
+		cooldowns = {
+			burst = if s then math.max(0, (s.Cooldowns.Coreburst or 0) - os.clock()) else 0,
+			overdrive = if s then math.max(0, (s.Cooldowns.Overdrive or 0) - os.clock()) else 0,
+		},
+		burstCost = Progression.stats(profile, Config).BurstCost,
 		sprint = s and s.Sprint or false,
 		guard = s and s.Guard or false,
 		combo = s and s.Combo or 0,
@@ -214,6 +223,21 @@ Replication.Events.Request.OnServerEvent:Connect(function(player, packet)
 		if c and c.PrimaryPart and h and h.Health > 0 then
 			c:PivotTo(CFrame.new(e.Center + Vector3.new(0, 5, 28)))
 			notices[player] = "Rejoined current attempt · roster difficulty preserved"
+		end
+		state(player)
+		return
+	end
+	if action == "previewAbilities" then
+		if RunService:IsStudio() and not Config.EnableStudioDataStore then
+			local s = combat.States[player]
+			if s then
+				s.PreviewAbilities = true
+				s.Focus = 100
+			end
+			notices[player] =
+				"Studio ability preview: E/R unlocked and Focus refilled for this life. Earned progress unchanged."
+		else
+			notices[player] = "Ability preview is available only in an unsaved Studio session"
 		end
 		state(player)
 		return

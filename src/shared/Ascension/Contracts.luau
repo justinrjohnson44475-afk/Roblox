@@ -55,4 +55,4 @@ export type AssetRecord = {
 	Required: boolean,
 	EngineEvidence: string,
 }
-return table.freeze({ Requests = 2, CombatEvents = 1, Attacks = 1, Profiles = 3 })
+return table.freeze({ Requests = 2, CombatEvents = 1, Attacks = 2, Profiles = 3 })

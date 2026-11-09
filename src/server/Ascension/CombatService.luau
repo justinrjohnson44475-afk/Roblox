@@ -31,7 +31,17 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 		end
 		local stats = Progression.stats(profile, Config)
 		local aim = request.Aim and Vector3.new(request.Aim.x, 0, request.Aim.z) or root.CFrame.LookVector
+		if s.PreviewAbilities then
+			stats.Level = math.max(5, stats.Level)
+		end
 		local action = request.Action
+		if action == "heavyCharge" then
+			if self.Movement.Dashes[player] or self.Movement.Walls[player] then
+				return false, "Finish traversal before charging"
+			end
+			return Timeline.charge(s, request.Enabled == true, now),
+				"Heavy unavailable: finish current action or recover stamina"
+		end
 		self.Movement:observe(player, root, hum, now)
 		if action == "airJump" or action == "wallrun" then
 			if s.Attack or s.Guard or now < s.LockedUntil then
@@ -108,6 +118,12 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 			return false, reason
 		end
 		a.Build = BuildAdapter.accept(s, Definitions[a.Definition], stats, profile.Path, now)
+		a.Build.Damage = math.floor(
+			a.Build.Damage
+				* a.ChargeScale
+				* (if now < s.OverdriveUntil and (action == "light" or action == "heavy") then 1.25 else 1)
+		)
+		a.Build.Radius = if action == "overdrive" then 23 else stats.BurstRadius
 		a.Encounter = e.Id
 		a.Origin = root.CFrame
 		a.RootPosition = root.Position
@@ -118,6 +134,7 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 			ends = a.EndAt,
 			attack = a.Id,
 			action = Definitions[a.Definition].Animation,
+			offset = if action == "heavy" then Definitions.Heavy.Windup else 0,
 			actor = player.UserId,
 			sequence = request.Sequence,
 			position = root.Position,
@@ -155,6 +172,28 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 			local sweep, finished = Timeline.advance(s, now, Definitions)
 			if
 				sweep
+				and e
+				and Membership.contains(e, player.UserId)
+				and sweep.Attack.Encounter == e.Id
+				and not e.Finished
+				and not sweep.Attack.CueEmitted
+				and (sweep.Attack.Definition == "Coreburst" or sweep.Attack.Definition == "Overdrive")
+			then
+				sweep.Attack.CueEmitted = true
+				if sweep.Attack.Definition == "Overdrive" then
+					s.OverdriveUntil = now + 8
+				end
+				emit(e, {
+					result = if sweep.Attack.Definition == "Overdrive" then "overdrive" else "coreburst",
+					actor = player.UserId,
+					attack = sweep.Attack.Id,
+					position = root.Position,
+					radius = sweep.Attack.Build.Radius,
+					duration = 8,
+				})
+			end
+			if
+				sweep
 				and plausible
 				and e
 				and Membership.contains(e, player.UserId)
@@ -173,7 +212,8 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 						def,
 						sweep.From,
 						sweep.To,
-						a.Build.ReachScale
+						a.Build.ReachScale,
+						a.Build.Radius
 					)
 					and Timeline.hit(a, e.Id)
 				then
@@ -182,7 +222,9 @@ function Combat.new(data, encounters, animations, emit, movementFeedback)
 						player,
 						e,
 						a.Build.Damage,
-						a.Definition == "Heavy" or a.Definition == "Coreburst" or a.Definition == "Overdrive",
+						if a.Definition == "Coreburst"
+							then "coreburst"
+							else a.Definition == "Heavy" or a.Definition == "Overdrive",
 						now
 					)
 					if amount then

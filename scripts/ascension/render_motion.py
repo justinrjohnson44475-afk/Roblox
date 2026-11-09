@@ -17,7 +17,16 @@ for pos,power in [((4,7,9),1400),((-4,-2,7),1800)]:
  lamp.rotation_euler=(Vector((0,0,3))-lamp.location).to_track_quat('-Z','Y').to_euler()
 bpy.ops.object.camera_add(location=(10,9,5));camera=bpy.context.object
 camera.rotation_euler=(Vector((0,0,3))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=11;scene.camera=camera
-for name,t in [('Sprint',.115),('Light1',.16),('DashForward',.07),('DoubleJump',.2),('WallRunLeft',.14)]:
+for name,t in [('Land',.12),('HeavyLand',.38),('DoubleJump',.36),('Light1',.11),('HeavyCharge',.35)]:
  arm.animation_data.action=bpy.data.actions[name];scene.frame_set(int(1+t*60),subframe=(1+t*60)%1)
  scene.render.filepath=str(root/f'assets/ascension/previews/Motion-{name}.png');bpy.ops.render.render(write_still=True)
 print('Rendered five source poses. Not Roblox captures or a verified animation demonstration.')
+
+# Separate original Warden source pose inspection, never an engine capture.
+ward=bpy.data.objects['VerdantWarden_R15'];ward.location.x=0;ward.animation_data_create()
+for obj in scene.objects:
+ if obj.type=='MESH':obj.hide_render=obj.parent!=ward
+camera.location=(13,16,9);camera.rotation_euler=(Vector((0,0,5.5))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.ortho_scale=16
+for name,t in [('WardenWalk',.22),('WardenSlam',1.57),('WardenRoar',.35)]:
+ ward.animation_data.action=bpy.data.actions[name];scene.frame_set(int(1+t*60),subframe=(1+t*60)%1)
+ scene.render.filepath=str(root/f'assets/ascension/previews/Motion-{name}.png');bpy.ops.render.render(write_still=True)

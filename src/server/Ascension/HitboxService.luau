@@ -4,18 +4,22 @@ local WeaponSweep = require(Shared.Ascension.WeaponSweep)
 local Distance = require(Shared.Ascension.Sweep)
 local Choreography = require(Shared.Ascension.Choreography)
 local Hitbox = {}
-function Hitbox.canHit(world, character, origin, target, definition, from, to, reachScale)
+function Hitbox.canHit(world, character, origin, target, definition, from, to, reachScale, radius)
 	local root = target.PrimaryPart
-	if not root or (root.Position - origin.Position).Magnitude > 12 * reachScale then
+	local ability = definition.Id == "Coreburst" or definition.Id == "Overdrive"
+	if
+		not root
+		or (root.Position - origin.Position).Magnitude > (if ability then radius else 12 * reachScale)
+	then
 		return false
 	end
 	local offset = root.Position - origin.Position
-	if offset.Magnitude > 0.01 and origin.LookVector:Dot(offset.Unit) < -0.15 then
+	if not ability and offset.Magnitude > 0.01 and origin.LookVector:Dot(offset.Unit) < -0.15 then
 		return false
 	end
 	local point = origin:PointToObjectSpace(root.Position)
 	local localPoint = { x = point.X, y = point.Y, z = point.Z }
-	local near = false
+	local near = ability
 	for _, segment in
 		WeaponSweep.segments(
 			Choreography.Clips[definition.Animation],

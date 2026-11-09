@@ -88,4 +88,37 @@ return function(test, equal)
 		equal(motion.AirUsed, false)
 		equal(motion.Predicted[7], nil)
 	end)
+	test("locked and unaffordable E/R never predict a fidget animation", function()
+		local motion, _, counts = fixture()
+		motion.State = { profile = { Level = 1 }, abilityLevel = 1, focus = 100, encounter = {} }
+		motion:attack("burst")
+		motion:attack("overdrive")
+		local plays = counts()
+		equal(plays, 0)
+		equal(next(motion.Predicted), nil)
+		motion.State.abilityLevel = 5
+		motion.State.focus = 0
+		motion:attack("burst")
+		motion:attack("overdrive")
+		plays = counts()
+		equal(plays, 0)
+	end)
+	test("ready Coreburst predicts while a cooling ability stays still", function()
+		local motion, _, counts = fixture()
+		motion.State = {
+			profile = { Level = 5 },
+			abilityLevel = 5,
+			focus = 100,
+			encounter = {},
+			cooldowns = {
+				burst = 1,
+			},
+		}
+		motion:attack("burst")
+		equal(counts(), 0)
+		motion.State.cooldowns.burst = 0
+		motion:attack("burst")
+		equal(counts(), 1)
+		assert(motion.Predicted[1])
+	end)
 end

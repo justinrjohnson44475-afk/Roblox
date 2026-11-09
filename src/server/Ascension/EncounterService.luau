@@ -53,7 +53,20 @@ function Encounters.new(source, animations, emit, onWin)
 		actor.Parent = workspace
 		actor.Humanoid.MaxHealth = 600 * e.Scale
 		actor.Humanoid.Health = actor.Humanoid.MaxHealth
-		actor.Humanoid.WalkSpeed = 10
+		actor.Humanoid.WalkSpeed = 16
+		actor.Humanoid.BreakJointsOnDeath = false
+		local facingAttachment = Instance.new("Attachment")
+		facingAttachment.Name = "WardenFacing"
+		facingAttachment.Parent = actor.PrimaryPart
+		local facing = Instance.new("AlignOrientation")
+		facing.Mode = Enum.OrientationAlignmentMode.OneAttachment
+		facing.Attachment0 = facingAttachment
+		facing.Responsiveness = 12
+		facing.MaxTorque = 1e6
+		facing.MaxAngularVelocity = 8
+		facing.Enabled = false
+		facing.Parent = actor.PrimaryPart
+		e.Facing = facing
 		actor.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 		actor.PrimaryPart:SetNetworkOwner(nil)
 		e.Actor = actor
@@ -98,7 +111,16 @@ function Encounters.new(source, animations, emit, onWin)
 		end
 		local dealt, broken = Warden.damage(e.Warden, amount, breaker, now)
 		e.Contribution[player.UserId] = (e.Contribution[player.UserId] or 0) + dealt
-		e.Actor.Humanoid.Health = e.Warden.Health
+		e.Actor.Humanoid.Health = math.max(1, e.Warden.Health)
+		if
+			not broken
+			and e.Warden.Health > 0
+			and (e.Warden.State == "approach" or e.Warden.State == "recovery")
+			and now - (e.FlinchAt or -100) > 0.24
+		then
+			e.FlinchAt = now
+			animations:play(e.Actor, "WardenFlinch", 0.04)
+		end
 		if broken then
 			animations:play(e.Actor, "WardenExposed")
 			emit(e, { result = "corebreak", position = e.Actor.PrimaryPart.Position })
@@ -132,6 +154,10 @@ function Encounters.new(source, animations, emit, onWin)
 			end
 			if e.Warden.Health <= 0 then
 				e.Finished = now
+				e.Actor.Humanoid.WalkSpeed = 0
+				e.Actor.Humanoid:MoveTo(root.Position)
+				e.Facing.Enabled = false
+				animations:play(e.Actor, "WardenDefeat", 0.06)
 				onWin(e)
 				emit(e, { result = "victory", position = root.Position })
 				continue
@@ -158,23 +184,58 @@ function Encounters.new(source, animations, emit, onWin)
 				emit(e, { result = "reposition", position = root.Position })
 			end
 			local action, pattern = Warden.tick(e.Warden, now, dist)
-			if action == "navigate" then
+			if action == "roar" then
+				local direction = nearest.Character.PrimaryPart.Position - root.Position
+				direction = Vector3.new(direction.X, 0, direction.Z)
+				if direction.Magnitude > 0.1 then
+					e.Actor.Humanoid.AutoRotate = false
+					e.Facing.CFrame = CFrame.lookAt(Vector3.zero, direction)
+					e.Facing.Enabled = true
+				end
+				e.Actor.Humanoid:MoveTo(root.Position)
+				animations:play(e.Actor, "WardenRoar", 0.10)
+				emit(e, { result = "roar", position = root.Position, phase = e.Warden.Phase })
+			elseif action == "navigate" then
+				local channel = animations.Channels[e.Actor]
+				local old = channel and channel.Action
+				if old and old.Name ~= "WardenFlinch" then
+					animations:stop(e.Actor, "Action", 0.12)
+				end
+				e.Facing.Enabled = false
+				e.Actor.Humanoid.AutoRotate = true
+				e.Actor.Humanoid.WalkSpeed = if e.Warden.Phase == 2 then 18 else 16
 				self.Navigation:move(e.Actor, nearest.Character.PrimaryPart.Position, now)
+				local walking = animations.Tracks[e.Actor] and animations.Tracks[e.Actor].WardenWalk
+				if walking then
+					walking:AdjustSpeed(math.clamp(root.AssemblyLinearVelocity.Magnitude / 8, 0.5, 2.4))
+				end
 				if e.Locomotion ~= "walk" then
 					animations:play(e.Actor, "WardenWalk")
 					e.Locomotion = "walk"
 				end
 			elseif action == "telegraph" then
+				animations:stop(e.Actor, "Locomotion", 0.1)
 				e.Locomotion = nil
 				e.Actor.Humanoid:MoveTo(root.Position)
 				e.Aim = nearest.Character.PrimaryPart.Position
 				local horizontal = Vector3.new(e.Aim.X, root.Position.Y, e.Aim.Z)
 				if (horizontal - root.Position).Magnitude > 0.1 then
-					root.CFrame = CFrame.lookAt(root.Position, horizontal)
+					e.Actor.Humanoid.AutoRotate = false
+					e.Facing.CFrame = CFrame.lookAt(Vector3.zero, horizontal - root.Position)
+					e.Facing.Enabled = true
 				end
-				animations:play(e.Actor, if pattern == "lance" then "WardenLance" else "WardenSlam")
+				animations:play(
+					e.Actor,
+					if pattern == "lance"
+						then "WardenLance"
+						elseif pattern == "melee" then "WardenSwipe"
+						else "WardenSlam"
+				)
 				emit(e, { result = "telegraph", pattern = pattern, position = e.Aim, ends = e.Warden.Until })
 			elseif action == "impact" then
+				if pattern == "lance" then
+					emit(e, { result = "lance", position = e.Aim, origin = root.Position })
+				end
 				for _, p in self:players(e) do
 					local c = p.Character
 					local r = c and c.PrimaryPart

@@ -3,6 +3,8 @@ local Timeline = {}
 function Timeline.new()
 	return {
 		Focus = 0,
+		ChargeAt = nil,
+		OverdriveUntil = 0,
 		Stamina = 100,
 		Attack = nil,
 		Combo = 0,
@@ -18,6 +20,17 @@ function Timeline.new()
 		LastSpend = -100,
 		Sprint = false,
 	}
+end
+function Timeline.charge(s, enabled, now)
+	if not enabled then
+		s.ChargeAt = nil
+		return true
+	end
+	if s.Attack or s.ChargeAt or s.Guard or now < s.LockedUntil or s.Stamina < 24 then
+		return false
+	end
+	s.ChargeAt = now
+	return true
 end
 function Timeline.begin(s, action, now, stats, definitions)
 	if now < s.LockedUntil then
@@ -40,6 +53,15 @@ function Timeline.begin(s, action, now, stats, definitions)
 		return nil, "unknown"
 	end
 	local def = definitions[id]
+	local charged = 0
+	if id == "Heavy" then
+		if not s.ChargeAt or now - s.ChargeAt < def.Windup then
+			return nil, "Hold Heavy for at least 0.35s, then release"
+		end
+		charged = math.min(1, now - s.ChargeAt)
+	elseif s.ChargeAt then
+		return nil, "Release or cancel Heavy first"
+	end
 	if id == "Coreburst" and stats.Level < 2 then
 		return nil, "level"
 	end
@@ -60,12 +82,15 @@ function Timeline.begin(s, action, now, stats, definitions)
 	s.NextAttack += 1
 	-- Flow shortens recovery only; authored active frames stay aligned to the animation.
 	local recovery = def.Recovery * math.max(0.8, stats.CooldownScale)
+	local start = if id == "Heavy" then now - def.Windup else now
+	s.ChargeAt = nil
 	local a = {
 		Id = s.NextAttack,
 		Definition = id,
-		Start = now,
+		Start = start,
+		ChargeScale = if charged > 0.0 then 1 + math.clamp((charged - 0.35) / 0.65, 0, 1) * 0.25 else 1,
 		Previous = 0,
-		EndAt = now + def.Windup + def.Active + recovery,
+		EndAt = start + def.Windup + def.Active + recovery,
 		Hits = {},
 		HitCount = 0,
 		MissSent = false,
@@ -114,7 +139,7 @@ function Timeline.hit(attack, targetId): boolean
 	return true
 end
 function Timeline.guard(s, enabled, now)
-	if enabled and (s.Attack or now < s.LockedUntil or s.Stamina < 10) then
+	if enabled and (s.Attack or s.ChargeAt or now < s.LockedUntil or s.Stamina < 10) then
 		return false
 	end
 	if enabled and not s.Guard then
@@ -157,6 +182,7 @@ function Timeline.dash(s, now, stats, definitions)
 		s.Attack = nil
 	end
 	s.Guard = false
+	s.ChargeAt = nil
 	s.LastDash = now
 	s.FollowUntil = now + 1.4
 	s.DodgeUntil = now + definitions.Dash.Defense
@@ -166,14 +192,11 @@ function Timeline.dash(s, now, stats, definitions)
 end
 function Timeline.regenerate(s, dt, now)
 	dt = math.clamp(dt, 0, 0.1)
-	if s.Sprint and s.Stamina > 0 then
-		s.Stamina = math.max(0, s.Stamina - dt * 8)
-		s.LastSpend = now
-	elseif not s.Guard and now - s.LastSpend > 0.8 then
-		s.Stamina = math.min(100, s.Stamina + dt * 22)
+	if s.ChargeAt and now - s.ChargeAt > 2 then
+		s.ChargeAt = nil
 	end
-	if s.Stamina <= 0 then
-		s.Sprint = false
+	if not s.Guard and not s.ChargeAt and now - s.LastSpend > 0.8 then
+		s.Stamina = math.min(100, s.Stamina + dt * (if now < s.OverdriveUntil then 30 else 22))
 	end
 end
 return Timeline

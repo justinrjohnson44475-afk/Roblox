@@ -1,6 +1,9 @@
 --!strict
 -- Engine-independent encounter choreography. Tick yields deliberate actions, not immediate damage.
 local Warden = {}
+function Warden.contact(pattern)
+	return if pattern == "core" then 1.57 elseif pattern == "lance" then 1.02 else 0.82
+end
 function Warden.new(health, now)
 	return {
 		Health = health,
@@ -12,12 +15,20 @@ function Warden.new(health, now)
 		Charge = 0,
 		Target = nil,
 		Applied = false,
+		Intro = true,
+		PhaseShown = 1,
 	}
 end
 function Warden.tick(s, now, distance)
 	if s.Health <= 0 then
 		s.State = "defeated"
 		return "defeated"
+	end
+	if s.Intro then
+		s.Intro = false
+		s.State = "recovery"
+		s.Until = now + 1.1
+		return "roar"
 	end
 	s.Phase = if s.Health < s.MaxHealth * 0.5 then 2 else 1
 	if s.State == "exposed" or s.State == "recovery" or s.State == "stagger" then
@@ -43,7 +54,13 @@ function Warden.tick(s, now, distance)
 		s.Until = now + (if s.Phase == 2 then 0.65 else 1)
 		return "recover"
 	end
-	if distance > 24 then
+	if s.Phase > s.PhaseShown then
+		s.PhaseShown = s.Phase
+		s.State = "recovery"
+		s.Until = now + 1.1
+		return "roar"
+	end
+	if distance > 14 then
 		return "navigate"
 	end
 	s.Counter += 1
@@ -51,7 +68,7 @@ function Warden.tick(s, now, distance)
 	s.State = "windup"
 	s.Charge = 0
 	s.Applied = false
-	s.Until = now + (if s.Pattern == "core" then 1.5 elseif s.Pattern == "lance" then 0.95 else 0.75)
+	s.Until = now + Warden.contact(s.Pattern)
 	return "telegraph", s.Pattern
 end
 function Warden.damage(s, amount, breaker, now)
@@ -60,7 +77,7 @@ function Warden.damage(s, amount, breaker, now)
 	end
 	local broken = false
 	if s.State == "windup" and s.Pattern == "core" and breaker then
-		s.Charge += amount
+		s.Charge += if breaker == "coreburst" then s.MaxHealth * 0.06 else amount
 		if s.Charge >= s.MaxHealth * 0.06 then
 			s.State = "exposed"
 			s.Until = now + 3.5

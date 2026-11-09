@@ -27,3 +27,12 @@ Source now has33 clips and50 registry records; all remain exported and await own
 Test delivery: `build/Riftwake-Movement-v2.rbxl`, SHA256 `2bd04bba1989d44f44df0334aadf6cfbf42e66ce0bf57216d70f6ecc43ca969f`. This named copy equals the updated signature binary. `16-MOVEMENT-V2.md` records controls, references and exact Studio regressions. No merge, production publication, paid resources or independent-study results.
 
 Movement-v2 game-source checkpoint `e27140cedf2897565a2f5522464ea9366155b427` passed [GitHub Actions run42534318978](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42534318978), observed completed/success. The uploaded artifact was verified present and unexpired. It includes `Riftwake-Movement-v2.rbxl`; this CI result establishes cloud build checks, not Studio quality. The subsequent evidence-only commit does not change game source.
+
+
+## Combat v3 — next owner-feedback revision
+
+The owner supplied a landing screenshot and requested faster default movement, distinct attacks/abilities, Warden motion and whole-biome scope. The screenshot demonstrates the previous landing defect; no new agent-observed engine test is claimed. New cloud checks: **153 Luau domain/mock/DOM/compilation checks**, **9 publisher tests**, StyLua, both Rojo projects, source integrity and structural inspections passed. Added regressions check knee direction/neutral recovery,60-stud default movement, server charge timing/cancel rules, E/R gating without pose prediction, and Warden authored contact timing.
+
+Inspected source renders of landing absorption/recovery and Warden gait. These are Blender poses, not Roblox captures. Registry:55 exported records/38 clips, all without verified owned import IDs. Small biome samples were removed; full biomes are planned world regions. No profile reset, permanent preview unlock, production publication, merge, asset purchase or paid acquisition occurred.
+
+Test file: `build/Riftwake-Combat-v3.rbxl`; SHA256 `1086c7fa81d2683fb2280658e633012fd6b857dbf48fdbba8342e461b723a2d3`. See17-COMBAT-V3.md for exact behavior and the next Studio checklist.

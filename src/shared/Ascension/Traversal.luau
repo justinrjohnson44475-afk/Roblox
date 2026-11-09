@@ -1,16 +1,25 @@
 --!strict
 -- Version 2 tuning follows the owner's stiff-movement playtest report.
 local Traversal = {
-	Version = 2,
+	Version = 3,
 	DashDuration = 0.18,
-	SprintSpeed = 30,
-	RunSpeed = 17,
+	SprintSpeed = 60,
+	RunSpeed = 60,
 	DoubleJumpVelocity = 48,
 	WallDuration = 0.70,
 	WallSpeed = 28,
 	WallSteps = 5,
 	WallCost = 12,
 }
+-- Reserved for future earned upgrades; no client packet can set this bonus.
+function Traversal.runSpeed(earnedBonus)
+	return Traversal.RunSpeed
+		+ math.clamp(
+			if type(earnedBonus) == "number" and earnedBonus == earnedBonus then earnedBonus else 0,
+			0,
+			30
+		)
+end
 function Traversal.new()
 	return {
 		Grounded = false,

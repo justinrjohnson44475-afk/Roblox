@@ -13,6 +13,7 @@ function Presentation.new(mobile)
 		Telegraphs = {},
 		Echoes = {},
 		Fades = {},
+		Auras = {},
 	}
 	local folder = Instance.new("Folder")
 	folder.Name = "AscensionLocalDebris"
@@ -24,6 +25,7 @@ function Presentation.new(mobile)
 			return
 		end
 		local p = table.remove(self.Free) or Instance.new("Part")
+		p.Shape = Enum.PartType.Block
 		p.Name = "PresentationOnly"
 		p.Anchored = true
 		p.CanCollide = false
@@ -82,6 +84,7 @@ function Presentation.new(mobile)
 				break
 			end
 			local part = table.remove(self.Free) or Instance.new("Part")
+			part.Shape = Enum.PartType.Block
 			part.Name = "PhaseEcho"
 			part.Anchored = true
 			part.CanCollide = false
@@ -97,6 +100,27 @@ function Presentation.new(mobile)
 		end
 	end
 
+	function self:ring(position, radius, now, overdrive)
+		local id = Budget.acquire(self.Budget, now + 0.45)
+		if not id then
+			return
+		end
+		local p = table.remove(self.Free) or Instance.new("Part")
+		p.Name = "AbilityShockwave"
+		p.Shape = Enum.PartType.Cylinder
+		p.Anchored = true
+		p.CanCollide = false
+		p.CanTouch = false
+		p.CanQuery = false
+		p.Material = Enum.Material.Neon
+		p.Color = if overdrive then Color3.fromRGB(247, 190, 85) else Color3.fromRGB(94, 235, 217)
+		p.CFrame = CFrame.new(position.X, position.Y - 2.7, position.Z) * CFrame.Angles(0, 0, math.pi / 2)
+		p.Size = Vector3.new(0.10, 0.1, 0.1)
+		p.Transparency = 0.55
+		p.Parent = folder
+		self.Active[id] = { Part = p, Kind = "ring", At = now, Duration = 0.45, Radius = radius }
+	end
+
 	function self:event(event, now)
 		local pos = event.position
 		if typeof(pos) ~= "Vector3" then
@@ -104,6 +128,54 @@ function Presentation.new(mobile)
 		end
 		local camera = workspace.CurrentCamera
 		if not camera or (camera.CFrame.Position - pos).Magnitude > 140 then
+			return
+		end
+		if event.result == "lance" and typeof(event.origin) == "Vector3" then
+			local delta = pos - event.origin
+			local id = Budget.acquire(self.Budget, now + 0.18)
+			if id and delta.Magnitude > 0.1 then
+				local p = table.remove(self.Free) or Instance.new("Part")
+				p.Name = "WardenLance"
+				p.Shape = Enum.PartType.Block
+				p.Size = Vector3.new(0.3, 0.3, delta.Magnitude)
+				p.CFrame = CFrame.lookAt((pos + event.origin) / 2, pos)
+				p.Anchored = true
+				p.CanCollide = false
+				p.CanQuery = false
+				p.CanTouch = false
+				p.Material = Enum.Material.Neon
+				p.Color = Color3.fromRGB(109, 209, 185)
+				p.Transparency = 0.35
+				p.Parent = folder
+				self.Active[id] = { Part = p, Kind = "beam", At = now, Duration = 0.18 }
+			elseif id then
+				Budget.release(self.Budget, id)
+			end
+			return
+		end
+		if event.result == "coreburst" or event.result == "overdrive" then
+			self:ring(pos, event.radius or 18, now, event.result == "overdrive")
+			for i = 1, (if mobile then 5 else 10) do
+				acquire(pos, (event.seed or 1) * 31 + i, now, true)
+			end
+			if event.result == "overdrive" then
+				local player = game:GetService("Players"):GetPlayerByUserId(event.actor)
+				local model = player and player.Character
+				if model then
+					local old = self.Auras[model]
+					if old then
+						old.Highlight:Destroy()
+					end
+					local highlight = Instance.new("Highlight")
+					highlight.Name = "OverdriveAura"
+					highlight.Adornee = model
+					highlight.FillTransparency = 1
+					highlight.OutlineColor = Color3.fromRGB(255, 194, 90)
+					highlight.OutlineTransparency = 0.25
+					highlight.Parent = folder
+					self.Auras[model] = { Highlight = highlight, Ends = now + (event.duration or 8) }
+				end
+			end
 			return
 		end
 		if event.result == "telegraph" then
@@ -157,6 +229,12 @@ function Presentation.new(mobile)
 		end
 	end
 	function self:step(now, dt)
+		for model, aura in self.Auras do
+			if not model.Parent or now >= aura.Ends then
+				aura.Highlight:Destroy()
+				self.Auras[model] = nil
+			end
+		end
 		for model, echo in self.Echoes do
 			if not model.Parent or echo.Left <= 0 then
 				self.Echoes[model] = nil
@@ -178,6 +256,29 @@ function Presentation.new(mobile)
 		end
 		for id, d in self.Active do
 			local age = now - d.At
+			if d.Kind == "beam" then
+				d.Part.Transparency = 0.35 + 0.65 * math.min(1, age / d.Duration)
+				if age >= d.Duration then
+					Budget.release(self.Budget, id)
+					d.Part.Parent = nil
+					table.insert(self.Free, d.Part)
+					self.Active[id] = nil
+				end
+				continue
+			end
+			if d.Kind == "ring" then
+				local diameter = math.max(0.1, d.Radius * 2 * math.min(1, age / d.Duration))
+				d.Part.Size = Vector3.new(0.10, diameter, diameter)
+				d.Part.Transparency = 0.55 + 0.45 * math.min(1, age / d.Duration)
+				if age >= d.Duration then
+					Budget.release(self.Budget, id)
+					d.Part.Parent = nil
+					d.Part.Shape = Enum.PartType.Block
+					table.insert(self.Free, d.Part)
+					self.Active[id] = nil
+				end
+				continue
+			end
 			if d.Kind == "echo" then
 				d.Part.Transparency = 0.65 + 0.35 * math.clamp(age / d.Duration, 0, 1)
 				if age >= d.Duration then
@@ -207,6 +308,10 @@ function Presentation.new(mobile)
 		self.Shake *= math.exp(-dt * 16)
 	end
 	function self:clear()
+		for _, aura in self.Auras do
+			aura.Highlight:Destroy()
+		end
+		self.Auras = {}
 		for _, fade in self.Fades do
 			for part, original in fade.Parts do
 				if part.Parent then

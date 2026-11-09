@@ -3,6 +3,8 @@ local Protocol = { Version = 2 }
 local allowed = {
 	light = true,
 	heavy = true,
+	heavyCharge = true,
+	previewAbilities = true,
 	dash = true,
 	airJump = true,
 	wallrun = true,
@@ -49,7 +51,8 @@ function Protocol.decode(session, packet, now)
 	local elapsed = math.max(0, now - session.TokenAt)
 	session.Tokens = math.min(12, session.Tokens + elapsed * 15)
 	session.TokenAt = now
-	local release = (packet.action == "guard" or packet.action == "sprint") and packet.enabled == false
+	local release = (packet.action == "guard" or packet.action == "sprint" or packet.action == "heavyCharge")
+		and packet.enabled == false
 	if session.Tokens < 1 and not release then
 		return nil, "rate"
 	end

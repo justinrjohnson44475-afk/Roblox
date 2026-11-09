@@ -11,7 +11,7 @@ for key,item in manifest['Assets'].items():
  assert item['LicenseVerified'] and item['CommercialUse'] and item['Rights'],key
  if not(item['RobloxId']>0 and item['Status']=='engine-validated' and item['EngineEvidence'] and item['Owner']!='UNASSIGNED_ROBLOX_CREATOR'):missing.append(key)
 clips=json.loads((root/'assets/ascension/animations/choreography.json').read_text())['clips']
-assert len(clips)==33
+assert len(clips)==38
 for name,clip in clips.items():
  assert clip['frames'][0]['time']==0 and abs(clip['frames'][-1]['time']-clip['duration'])<1e-6,name
  for frame in clip['frames']:

@@ -5,7 +5,7 @@ local Shared = game:GetService("ReplicatedStorage").Shared
 local Def = require(Shared.Ascension.AttackDefinitions)
 local T = require(Shared.Ascension.Traversal)
 local Motion = {}
-function Motion.new(player, animations, presentation, send)
+function Motion.new(player, animations, presentation, send, notice)
 	local self = {
 		Predicted = {},
 		BusyUntil = 0,
@@ -33,8 +33,77 @@ function Motion.new(player, animations, presentation, send)
 		end
 		return animations:play(self.Model, name, fade)
 	end
+	function self:notify(value)
+		if notice then
+			notice(value)
+		end
+	end
+	function self:charge(enabled)
+		if enabled then
+			if now() < self.BusyUntil or self.ChargeStarted then
+				self:notify("Finish the current attack before charging")
+				return
+			end
+			if not self.State or not self.State.encounter then
+				self:notify("Enter Warden to use combat attacks")
+				return
+			end
+			self.ChargeStarted = now()
+			local seq = send("heavyCharge", { enabled = true })
+			local track = self:play("HeavyCharge", 0.08)
+			if seq then
+				self.Predicted[seq] =
+					{ Track = track, Name = "HeavyCharge", At = now(), Expires = now() + 1.4, Charge = true }
+			end
+		elseif self.ChargeStarted then
+			local held = now() - self.ChargeStarted
+			self.ChargeStarted = nil
+			if held < 0.35 then
+				send("heavyCharge", { enabled = false })
+				animations:stop(self.Model, "Action", 0.08)
+				self:notify("Hold T / Heavy for at least 0.35s, then release")
+			else
+				self:attack("heavy")
+				self:notify("HEAVY RELEASED")
+			end
+		end
+	end
 	function self:attack(action)
 		local time = now()
+		if self.ChargeStarted and action ~= "heavy" then
+			self:notify("Release Heavy first")
+			return
+		end
+		if action == "burst" or action == "overdrive" then
+			local state = self.State
+			if not state then
+				self:notify("Synchronizing ability state")
+				return
+			end
+			local level = state.abilityLevel or state.profile.Level
+			local required = if action == "burst" then 2 else 5
+			local cost = if action == "burst" then (state.burstCost or 60) else 100
+			if level < required then
+				self:notify(
+					(if action == "burst" then "Coreburst" else "Overdrive")
+						.. " unlocks at level "
+						.. required
+				)
+				return
+			end
+			if state.focus < cost then
+				self:notify("Need " .. cost .. " Focus; land light attacks or use the Studio TEST E/R button")
+				return
+			end
+			if state.cooldowns and (state.cooldowns[action] or 0) > 0.1 then
+				self:notify("Ability is cooling down")
+				return
+			end
+		end
+		if self.State and not self.State.encounter then
+			self:notify("Enter Warden to use combat attacks")
+			return
+		end
 		if time < self.BusyUntil then
 			self.Queue = { Action = action, Expires = time + 0.18 }
 			return
@@ -52,9 +121,13 @@ function Motion.new(player, animations, presentation, send)
 		if not sequence then
 			return
 		end
-		self.BusyUntil = time + Def[clip].Duration
+		local offset = if action == "heavy" then Def.Heavy.Windup else 0
+		self.BusyUntil = time + Def[clip].Duration - offset
 		self.Queue = nil
-		local track = self:play(clip, 0.035)
+		local track = self:play(clip, 0.025)
+		if track and offset > 0 then
+			track.TimePosition = offset
+		end
 		self.Predicted[sequence] =
 			{ Track = track, Name = clip, At = time, Expires = time + 0.8, Attack = true }
 	end
@@ -67,6 +140,10 @@ function Motion.new(player, animations, presentation, send)
 		end
 		local aim = if h.MoveDirection.Magnitude > 0.1 then h.MoveDirection else root.CFrame.LookVector
 		aim = Vector3.new(aim.X, 0, aim.Z).Unit
+		if self.ChargeStarted then
+			self.ChargeStarted = nil
+			animations:stop(c, "Action", 0.04)
+		end
 		local sequence = send("dash", { aim = { x = aim.X, y = 0, z = aim.Z } })
 		if not sequence then
 			return
@@ -107,6 +184,9 @@ function Motion.new(player, animations, presentation, send)
 				self.BusyUntil = now()
 				self.Queue = nil
 			end
+			if p.Charge then
+				self.ChargeStarted = nil
+			end
 			if p.Air then
 				self.AirUsed = false
 			end
@@ -126,11 +206,20 @@ function Motion.new(player, animations, presentation, send)
 		if event.actor ~= player.UserId then
 			return
 		end
+		if event.result == "coreburst" then
+			self:notify("COREBURST · shockwave released")
+		end
+		if event.result == "overdrive" then
+			self:notify("OVERDRIVE · 8 seconds of empowered strikes")
+		end
 		local p = event.sequence and self.Predicted[event.sequence]
 		if event.result == "attack" then
 			-- Keep accepted prediction playing: stopping it here produced a visible confirmation hitch.
 			if not p or p.Name ~= event.action then
-				self:play(event.action, 0.04)
+				local track = self:play(event.action, 0.04)
+				if track and event.offset and event.offset > 0 then
+					track.TimePosition = event.offset
+				end
 			end
 			if p and p.Track and now() - event.timestamp > 0.07 then
 				p.Track:AdjustSpeed(0.92)
@@ -170,6 +259,7 @@ function Motion.new(player, animations, presentation, send)
 	end
 	function self:character(model)
 		self.Model = model
+		self.ChargeStarted = nil
 		self.Predicted = {}
 		self.Queue = nil
 		self.BusyUntil = 0
@@ -187,6 +277,22 @@ function Motion.new(player, animations, presentation, send)
 	end
 	function self:step(dt, state)
 		local time = now()
+		self.State = state
+		if self.ChargeStarted then
+			local held = time - self.ChargeStarted
+			local channel = animations.Channels[self.Model]
+			local track = channel and channel.Action
+			if track and held >= 0.35 then
+				track.TimePosition = 0.35
+				track:AdjustSpeed(0)
+			end
+			self:notify(
+				string.format("HEAVY · %d%% · release T / Heavy", math.min(100, math.floor(held * 100)))
+			)
+			if held >= 1.2 then
+				self:charge(false)
+			end
+		end
 		local c = self.Model
 		local h = c and c:FindFirstChildOfClass("Humanoid")
 		local root = c and c.PrimaryPart
@@ -219,7 +325,16 @@ function Motion.new(player, animations, presentation, send)
 		local grounded = h.FloorMaterial ~= Enum.Material.Air
 		if grounded then
 			if not self.Grounded then
-				animations:stop(c, "Mobility", 0.07)
+				animations:stop(c, "Mobility", 0)
+				-- Clear an expired full-body airborne pose before the upright landing takes ownership.
+				for _, name in { "Jump", "Fall", "DoubleJump" } do
+					local track = animations.Tracks[c] and animations.Tracks[c][name]
+					if track then
+						track:Stop(0)
+					end
+				end
+				self.Lean = CFrame.identity
+				self.AppliedLean = CFrame.identity
 				self.Wall = false
 				if time >= self.BusyUntil then
 					self:play(if self.FallSpeed < -50 then "HeavyLand" else "Land", 0.05)
@@ -262,10 +377,7 @@ function Motion.new(player, animations, presentation, send)
 		elseif state and state.guard then
 			nextClip = if localMove.X < -0.3 then "StrafeLeft" else "StrafeRight"
 		else
-			nextClip = if self.Sprint and h.WalkSpeed > 20
-				then "Sprint"
-				elseif h.WalkSpeed < 10 then "Walk"
-				else "Run"
+			nextClip = if h.WalkSpeed > 45 then "Sprint" elseif h.WalkSpeed < 10 then "Walk" else "Run"
 		end
 		if nextClip ~= self.Locomotion then
 			self.Locomotion = nextClip
@@ -273,11 +385,8 @@ function Motion.new(player, animations, presentation, send)
 		end
 		local track = animations.Tracks[c] and animations.Tracks[c][nextClip]
 		if track and (nextClip == "Run" or nextClip == "Sprint" or nextClip == "Walk") then
-			local nominal = if nextClip == "Sprint"
-				then T.SprintSpeed
-				elseif nextClip == "Run" then T.RunSpeed
-				else 8
-			track:AdjustSpeed(math.clamp(root.AssemblyLinearVelocity.Magnitude / nominal, 0.65, 1.35))
+			local nominal = if nextClip == "Sprint" then 30 elseif nextClip == "Run" then 30 else 8
+			track:AdjustSpeed(math.clamp(root.AssemblyLinearVelocity.Magnitude / nominal, 0.65, 2.2))
 		end
 		local lean = if grounded and time >= self.BusyUntil
 			then CFrame.Angles(0, 0, -localMove.X * 0.09)

@@ -200,11 +200,13 @@ function Movement.new(world, feedback)
 		end
 	end
 	function self:locomotion(player, humanoid, state, dt)
+		if not self.Dashes[player] and not self.Walls[player] then
+			humanoid.AutoRotate = state.Attack == nil
+		end
 		local desired = if state.Guard
 			then 8
-			elseif state.Attack then 10
-			elseif state.Sprint then T.SprintSpeed
-			else T.RunSpeed
+			elseif state.Attack or state.ChargeAt then 10
+			else T.runSpeed(state.SpeedBonus)
 		humanoid.WalkSpeed += (desired - humanoid.WalkSpeed) * (1 - math.exp(-math.min(dt, 0.1) * 18))
 	end
 	function self:remove(player)

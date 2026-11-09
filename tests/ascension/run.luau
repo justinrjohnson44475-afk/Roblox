@@ -18,16 +18,16 @@ return function(test, equal)
 	local serde = require("@lune/serde")
 	local R = require("@lune/roblox")
 	local stats = { Level = 5, CooldownScale = 1, BurstCost = 60, DashCooldown = 3.6 }
-	test("versioned light and heavy windows retain approved initial timings", function()
+	test("versioned light and heavy windows retain owner-feedback timing version 2", function()
 		for id, values in
 			{
-				Light1 = { 0.10, 0.12, 0.20 },
-				Light2 = { 0.12, 0.12, 0.22 },
-				Light3 = { 0.17, 0.15, 0.29 },
+				Light1 = { 0.06, 0.09, 0.13 },
+				Light2 = { 0.07, 0.10, 0.14 },
+				Light3 = { 0.10, 0.12, 0.20 },
 				Heavy = {
 					0.35,
-					0.12,
-					0.43,
+					0.16,
+					0.40,
 				},
 			}
 		do
@@ -93,7 +93,7 @@ return function(test, equal)
 		local s = Timeline.new()
 		local a = Timeline.begin(s, "light", 10, stats, Def)
 		assert(a)
-		equal(Timeline.advance(s, 10.09, Def), nil)
+		equal(Timeline.advance(s, 10.05, Def), nil)
 		local sweep, finished = Timeline.advance(s, 10.5, Def)
 		assert(sweep and finished)
 		equal(sweep.From, 0)
@@ -122,13 +122,13 @@ return function(test, equal)
 	test("dash cancels only recovery and preserves distance and defense", function()
 		local s = Timeline.new()
 		Timeline.begin(s, "light", 1, stats, Def)
-		assert(not Timeline.dash(s, 1.15, stats, Def))
-		assert(Timeline.dash(s, 1.23, stats, Def))
+		assert(not Timeline.dash(s, 1.10, stats, Def))
+		assert(Timeline.dash(s, 1.16, stats, Def))
 		equal(s.Attack, nil)
 		equal(s.Stamina, 80)
 		equal(Def.Dash.Distance, 18)
 		equal(Def.Dash.Duration, 0.18)
-		equal(s.DodgeUntil, 1.63)
+		equal(s.DodgeUntil, 1.56)
 		assert(not Timeline.dash(s, 2, stats, Def))
 		equal(Timeline.defend(s, 40, 1.4, 1, true, Def), 0)
 	end)
@@ -234,8 +234,104 @@ return function(test, equal)
 		assert(Protocol.decode(s, { version = 2, session = "air", seq = 2, action = "wallrun" }, 1.2))
 	end)
 
+	test("default running doubles the prior sprint and future bonuses stay server-bounded", function()
+		equal(Traversal.runSpeed(0), 60)
+		equal(Traversal.SprintSpeed, 60)
+		equal(Traversal.runSpeed(15), 75)
+		equal(Traversal.runSpeed(-9), 60)
+		equal(Traversal.runSpeed(999), 90)
+	end)
+	test("heavy requires a real charge, cancels early releases and begins at release contact", function()
+		local s = Timeline.new()
+		assert(not Timeline.begin(s, "heavy", 1, stats, Def))
+		assert(Timeline.charge(s, true, 1))
+		assert(not Timeline.begin(s, "heavy", 1.2, stats, Def))
+		local a = Timeline.begin(s, "heavy", 1.8, stats, Def)
+		assert(a)
+		equal(s.ChargeAt, nil)
+		equal(s.Stamina, 76)
+		assert(a.ChargeScale > 1)
+		local sweep = Timeline.advance(s, 1.81, Def)
+		assert(sweep and sweep.Definition.Id == "Heavy")
+		local c = Timeline.new()
+		assert(Timeline.charge(c, true, 1))
+		Timeline.charge(c, false, 1.1)
+		assert(not Timeline.begin(c, "heavy", 2, stats, Def))
+	end)
+	test("fast default running consumes no stamina and Overdrive regeneration expires", function()
+		local s = Timeline.new()
+		s.Sprint = true
+		Timeline.regenerate(s, 0.1, 10)
+		equal(s.Stamina, 100)
+		s.Stamina = 50
+		s.OverdriveUntil = 12
+		Timeline.regenerate(s, 0.1, 11)
+		equal(s.Stamina, 53)
+		Timeline.regenerate(s, 0.1, 13)
+		assert(math.abs(s.Stamina - 55.2) < 0.001)
+	end)
+	test("Warden intro and phase change emote without an immediate invisible impact", function()
+		local w = Warden.new(600, 0)
+		equal(Warden.tick(w, 1, 5), "roar")
+		equal(Warden.tick(w, 1.5, 5), nil)
+		w.Health = 250
+		equal(Warden.tick(w, 2.2, 5), "roar")
+		equal(w.Phase, 2)
+		equal(Warden.tick(w, 2.5, 5), nil)
+	end)
+	test("Coreburst reliably interrupts a marked charge across frozen party scaling", function()
+		local w = Warden.new(1590, 0)
+		w.Intro = false
+		w.State = "windup"
+		w.Pattern = "core"
+		local _, broken = Warden.damage(w, 28, "coreburst", 1)
+		assert(broken)
+		equal(w.State, "exposed")
+	end)
+	test("landing clips restore straight knees and upright head with no pelvis flip", function()
+		local data = serde.decode("json", fs.readFile("assets/ascension/animations/choreography.json"))
+		for _, name in { "Land", "HeavyLand", "DoubleJump" } do
+			local clip = data.clips[name]
+			for _, frame in clip.frames do
+				for _, bone in { "LeftLowerLeg", "RightLowerLeg" } do
+					local c = frame.poses[bone]
+					assert(c[11] <= 0.0001, name .. " bends knee forward")
+				end
+			end
+			local last = clip.frames[#clip.frames]
+			for _, bone in { "LowerTorso", "LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg" } do
+				local c = last.poses[bone]
+				assert(
+					math.abs(c[4] - 1) < 0.0001
+						and math.abs(c[8] - 1) < 0.0001
+						and math.abs(c[12] - 1) < 0.0001,
+					name .. " retained a bent leg or twisted waist"
+				)
+			end
+		end
+	end)
+
+	test("guard cannot overlay a charged Heavy and dash cancels its held state", function()
+		local s = Timeline.new()
+		assert(Timeline.charge(s, true, 1))
+		assert(not Timeline.guard(s, true, 1.1))
+		assert(Timeline.dash(s, 1.2, stats, Def))
+		equal(s.ChargeAt, nil)
+		assert(not Timeline.begin(s, "heavy", 1.6, stats, Def))
+	end)
+	test("Warden attack clip contacts match server telegraph windups", function()
+		local clips = serde.decode("json", fs.readFile("assets/ascension/animations/choreography.json")).clips
+		equal(clips.WardenSwipe.markers.HitStart, 0.75)
+		equal(clips.WardenLance.markers.HitStart, 0.95)
+		equal(clips.WardenSlam.markers.HitStart, 1.5)
+		assert(math.abs(clips.WardenSwipe.markers.GroundImpact - Warden.contact("melee")) < 0.00001)
+		assert(math.abs(clips.WardenLance.markers.GroundImpact - Warden.contact("lance")) < 0.00001)
+		assert(math.abs(clips.WardenSlam.markers.GroundImpact - Warden.contact("core")) < 0.00001)
+	end)
+
 	test("Warden telegraphs before impact and breaks into exposure", function()
 		local w = Warden.new(600, 0)
+		w.Intro = false
 		w.Counter = 2
 		local action, pattern = Warden.tick(w, 1, 5)
 		equal(action, "telegraph")
@@ -250,6 +346,7 @@ return function(test, equal)
 	end)
 	test("Warden basic attack can be parried and core cannot", function()
 		local w = Warden.new(600, 0)
+		w.Intro = false
 		equal(Warden.tick(w, 1, 5), "telegraph")
 		equal(Warden.tick(w, 2, 5), "impact")
 		assert(Warden.parry(w, 2))
@@ -440,11 +537,11 @@ return function(test, equal)
 		equal(Sweep.distance({ x = 3, y = 0, z = 0 }, { x = 0, y = 0, z = 0 }, { x = 0, y = 0, z = 0 }), 3)
 	end)
 	test(
-		"source animation library has thirty-three named clips with R15 joint poses and active markers",
+		"source animation library has thirty-eight named clips with R15 joint poses and active markers",
 		function()
 			local library =
 				R.deserializeModel(fs.readFile("assets/ascension/animations/SourceClips.rbxmx"))[1]
-			equal(#library:GetChildren(), 33)
+			equal(#library:GetChildren(), 38)
 			local heavy = library:FindFirstChild("Heavy")
 			assert(heavy and heavy:IsA("KeyframeSequence"))
 			local markers = {}
