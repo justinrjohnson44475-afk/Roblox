@@ -36,3 +36,5 @@ The owner supplied a landing screenshot and requested faster default movement, d
 Inspected source renders of landing absorption/recovery and Warden gait. These are Blender poses, not Roblox captures. Registry:55 exported records/38 clips, all without verified owned import IDs. Small biome samples were removed; full biomes are planned world regions. No profile reset, permanent preview unlock, production publication, merge, asset purchase or paid acquisition occurred.
 
 Test file: `build/Riftwake-Combat-v3.rbxl`; SHA256 `1086c7fa81d2683fb2280658e633012fd6b857dbf48fdbba8342e461b723a2d3`. See17-COMBAT-V3.md for exact behavior and the next Studio checklist.
+
+Combat-v3 game-source checkpoint `43c9abe30a54aa3fbdbcd010941f9f34a74c2837` passed [GitHub Actions run42538825921](https://github.com/justinrjohnson44475-afk/Roblox/actions/runs/42538825921), observed completed/success. The uploaded artifact was verified present and unexpired and includes `Riftwake-Combat-v3.rbxl`. This verifies cloud checks/artifact delivery, not Studio animation or performance. The following evidence-only commit changes no game source.
